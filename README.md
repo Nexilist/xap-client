@@ -3,6 +3,10 @@ So yeah, this thing was made by me, I was very bored so I took T_Tape's Menu and
 I'll will be very grateful if you do so.
 
 **Disclaimer: This code is for educational purposes only .**
+# Previews
+
+![enter image description here](https://i.imgur.com/7mVlPrr.png)
+
 # Installation
 **1.Install dependencies**
 
