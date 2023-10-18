@@ -5,9 +5,12 @@ I'll will be very grateful if you do so.
 **Disclaimer: This code is for educational purposes only .**
 
 # Credits
-> arturzxc: For the features (ESP, Triggerbot) and X11Display's XTestFakeRelativeMotionEvent
-> Koelion (Braziliana): Menu, Aimbot Calculations
-> unknowncheats: Basic Knowledge and Offsets
+arturzxc: for the features (ESP, Triggerbot) and X11Display's XTestFakeRelativeMotionEvent
+
+Koelion (Braziliana): menu, aimbot calculations
+
+unknowncheats: basic knowledge and offsets
+
 
 # Previews
 
