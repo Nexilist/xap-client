@@ -5,7 +5,7 @@ I'll will be very grateful if you do so.
 **Disclaimer: This code is for educational purposes only .**
 
 # Credits
-arturzxc: for the features (ESP, Triggerbot) and X11Display's XTestFakeRelativeMotionEvent
+arturzxc: for the features (ESP, Triggerbot, Aimbot) and X11Display's XTestFakeRelativeMotionEvent
 
 Koelion (Braziliana): menu, aimbot calculations
 
