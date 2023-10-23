@@ -123,12 +123,6 @@ struct Sense {
         }
 
         // Target Locked Glow //
-        const GlowMode LockedGlowMode = { 109, 108, 40, 100 };
-        const Color LockedOnColor = { 0, 5, 5 };
-        SetGlowState(HighlightSettingsPointer, HighlightSize, 2, LockedGlowMode);
-        const Color oldColor = Memory::Read<Color>(HighlightSettingsPointer + (HighlightSize * 2) + 8);
-        if (oldColor != LockedOnColor)
-            Memory::Write<Color>(HighlightSettingsPointer + (HighlightSize * 2) + 8, LockedOnColor);
-
+        
     }
 };
