@@ -15,6 +15,7 @@
 #include "Core/Level.hpp"
 #include "Core/Player.hpp"
 #include "Core/LocalPlayer.hpp"
+#include "Core/Camera.hpp"
 
 #include "Features/Aimbot.hpp"
 #include "Features/Sense.hpp"
@@ -29,10 +30,12 @@
 // Objects
 XDisplay* X11Display = new XDisplay();
 Overlay OverlayWindow = Overlay();
+ImDrawList* Canvas;
 
 // Game Objects
 Level* Map = new Level();
 LocalPlayer* Myself = new LocalPlayer();
+Camera* GameCamera = new Camera();
 
 // Players
 std::vector<Player*>* HumanPlayers = new std::vector<Player*>;
@@ -40,7 +43,7 @@ std::vector<Player*>* Dummies = new std::vector<Player*>;
 std::vector<Player*>* Players = new std::vector<Player*>;
 
 // Features
-Sense* ESP = new Sense(Players);
+Sense* ESP = new Sense(Players, GameCamera);
 Aimbot* AimAssist = new Aimbot(X11Display, Myself, Players);
 Triggerbot* Trigger = new Triggerbot(X11Display, Myself, Players);
 
@@ -85,6 +88,7 @@ bool InitializeOverlayWindow() {
     int ScreenWidth;
     int ScreenHeight;
     OverlayWindow.GetScreenResolution(ScreenWidth, ScreenHeight);
+    GameCamera->Initialize(ScreenWidth, ScreenHeight);
     std::cout << "overlay initialized" << std::endl;
     return true;
 }
@@ -106,14 +110,19 @@ void LoadConfig() {
     AimAssist->Speed = Config::Aimbot::Speed;
     AimAssist->Smooth = Config::Aimbot::Smooth;
     AimAssist->ExtraSmooth = Config::Aimbot::ExtraSmooth;
-    AimAssist->MaxFOV = Config::Aimbot::FOV;
+    AimAssist->HipfireFOV = Config::Aimbot::HipfireFOV;
+    AimAssist->ZoomFOV = Config::Aimbot::ZoomFOV;
     AimAssist->MinDistance = Config::Aimbot::MinDistance;
-    AimAssist->MaxDistance = Config::Aimbot::MaxDistance;
+    AimAssist->HipfireDistance = Config::Aimbot::HipfireDistance;
+    AimAssist->ZoomDistance = Config::Aimbot::ZoomDistance;
 
     // ESP //
     ESP->GlowEnabled = Config::Glow::Enabled;
     ESP->ItemGlow = Config::Glow::ItemGlow;
     ESP->GlowMaxDistance = Config::Glow::MaxDistance;
+    ESP->DrawSeer = Config::Glow::DrawSeer;
+    ESP->SeerMaxDistance = Config::Glow::SeerMaxDistance;
+    ESP->VisibleOnly = Config::Glow::VisibleOnly;
 
     // Triggerbot //
     Trigger->TriggerbotEnabled = Config::Triggerbot::Enabled;
@@ -130,6 +139,23 @@ void SaveConfig() {
 // Interface
 ImVec4 ProcessingTimeColor;
 void RenderUI() {
+    auto io = ImGui::GetIO();
+	ImGui::SetNextWindowSize(io.DisplaySize);
+	ImGui::SetNextWindowPos(ImVec2(0, 0));
+	ImGui::Begin("##Overlay", nullptr,
+		ImGuiWindowFlags_NoTitleBar |
+		ImGuiWindowFlags_NoResize |
+		ImGuiWindowFlags_NoMove |
+		ImGuiWindowFlags_NoScrollbar |
+		ImGuiWindowFlags_NoSavedSettings |
+		ImGuiWindowFlags_NoInputs |
+		ImGuiWindowFlags_NoBackground
+	);
+	Canvas = ImGui::GetWindowDrawList();
+    if (Map->IsPlayable)
+        ESP->RenderDrawings(Canvas, AimAssist, Myself);
+	ImGui::End();
+
     if (!IsMenuOpened) return;
 
     // Menu
@@ -202,6 +228,7 @@ bool UpdateCore() {
         }
 
         // Updates //
+        GameCamera->Update();
         ESP->Update();
         AimAssist->Update();
         Trigger->Update();
@@ -249,7 +276,7 @@ int main(int argc, char *argv[]) {
         for (int i = 0; i < 15000; i++) 
             Dummies->push_back(new Player(i, Myself));
 
-        ESP->Setup();
+        ESP->Initialize();
         
         std::cout << "core initialized" << std::endl;
         std::cout << "-----------------------------" << std::endl;

@@ -114,6 +114,13 @@ struct Player {
         return Team == 97;
     }
 
+    void PrintInfo() {
+        std::system("clear");
+        std::cout << "Position: " << LocalOrigin.x << " " << LocalOrigin.y << " " << LocalOrigin.z << std::endl;
+        std::cout << "Velocity: " << AbsoluteVelocity.x << " " << AbsoluteVelocity.y << " " << AbsoluteVelocity.z << std::endl;
+        std::cout << "IsAimedAt: " << IsAimedAt << std::endl;
+    }
+
     void EnableGlow() {
         if (GlowEnable != 1) Memory::Write<int>(BasePointer + OFF_GLOW_ENABLE, 1);
         if (GlowThroughWall != 2) {

@@ -30,15 +30,20 @@ namespace Config {
         float Speed = 40;
         float Smooth = 10;
         float ExtraSmooth = 250;
-        float FOV = 10;
-        float MinDistance = 2;
-        float MaxDistance = 200;
+        float HipfireFOV = 10;
+        float ZoomFOV = 10;
+        float MinDistance = 1;
+        float HipfireDistance = 200;
+        float ZoomDistance = 200;
     };
 
     namespace Glow {
         bool Enabled = true;
         bool ItemGlow = true;
+        bool DrawSeer = true;
+        bool VisibleOnly = true;
         float MaxDistance = 200;
+        float SeerMaxDistance = 200;
     };
 
     namespace Triggerbot {
@@ -59,15 +64,20 @@ void UpdateConfig() {
         WritePair(Aimbot, Speed);
         WritePair(Aimbot, Smooth);
         WritePair(Aimbot, ExtraSmooth);
-        WritePair(Aimbot, FOV);
+        WritePair(Aimbot, HipfireFOV);
+        WritePair(Aimbot, ZoomFOV);
         WritePair(Aimbot, MinDistance);
-        WritePair(Aimbot, MaxDistance);
+        WritePair(Aimbot, HipfireDistance);
+        WritePair(Aimbot, ZoomDistance);
         WriteSectionEnd();
 
         WriteSection(Glow);
         WritePair(Glow, Enabled);
         WritePair(Glow, ItemGlow);
+        WritePair(Glow, DrawSeer);
+        WritePair(Glow, VisibleOnly);
         WritePair(Glow, MaxDistance);
+        WritePair(Glow, SeerMaxDistance);
         WriteSectionEnd();
 
         WriteSection(Triggerbot);
@@ -93,13 +103,18 @@ bool ReadConfig(const std::string &configFile) {
     ReadFloat(Aimbot, Speed);
     ReadFloat(Aimbot, Smooth);
     ReadFloat(Aimbot, ExtraSmooth);
-    ReadFloat(Aimbot, FOV);
+    ReadFloat(Aimbot, HipfireFOV);
+    ReadFloat(Aimbot, ZoomFOV);
     ReadFloat(Aimbot, MinDistance);
-    ReadFloat(Aimbot, MaxDistance);
+    ReadFloat(Aimbot, HipfireDistance);
+    ReadFloat(Aimbot, ZoomDistance);
 
     ReadBool(Glow, Enabled);
     ReadBool(Glow, ItemGlow);
+    ReadBool(Glow, DrawSeer);
+    ReadBool(Glow, VisibleOnly);
     ReadFloat(Glow, MaxDistance);
+    ReadFloat(Glow, SeerMaxDistance);
 
     ReadBool(Triggerbot, Enabled);
     ReadFloat(Triggerbot, Range);

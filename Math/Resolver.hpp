@@ -21,7 +21,7 @@ public:
 
     static float GetTimeToTarget(Vector3D startPosition, Vector3D endPosition, float bulletSpeed) {
         float distance = (endPosition.Subtract(startPosition)).Magnitude();
-        return distance / bulletSpeed;
+        return distance / bulletSpeed * 1000;
     }
 
     static float GetBasicBulletDrop(Vector3D startPosition, Vector3D endPosition, float bulletSpeed, float bulletDropRate) {
@@ -32,7 +32,7 @@ public:
 
     static Vector3D GetTargetPosition(Vector3D startPosition, Vector3D endPosition, Vector3D targetVelocity, float bulletSpeed) {
         float time = GetTimeToTarget(startPosition, endPosition, bulletSpeed);
-        return GetTargetPosition(endPosition, targetVelocity, bulletSpeed);
+        return GetTargetPosition(endPosition, targetVelocity, time);
     }
 
     // Aim at moving target without bullet drop predicion
@@ -59,12 +59,11 @@ public:
             Vector3D predictedPosition = GetTargetPosition(targetPosition, targetVelocity, time);
             if (!OptimalAngle(start, predictedPosition, bulletSpeed, gravity, angle))
                 continue;
-            
+
             Vector3D direction = predictedPosition.Subtract(start);
             float horizontalDistance = direction.Magnitude2D();
             float travelTime = horizontalDistance / (bulletSpeed * cosf(angle));
-
-            if(travelTime <= time){
+            if (travelTime <= time){
                 result.x = -angle  * (180 / M_PI);
                 result.y = atan2f(direction.y, direction.x)  * (180 / M_PI);
                 return true;

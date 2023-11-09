@@ -30,12 +30,17 @@ struct Aimbot {
 
     HitboxType Hitbox = HitboxType::UpperChest;
 
+    float FinalDistance = 0;
+    float FinalFOV = 0;
+
     float Speed = 40;
     float Smooth = 10;
     float ExtraSmooth = 250;
-    float MaxFOV = 20;
-    float MinDistance = 2;
-    float MaxDistance = 200;
+    float HipfireFOV = 30;
+    float ZoomFOV = 10;
+    float MinDistance = 1;
+    float HipfireDistance = 60;
+    float ZoomDistance = 160;
 
     XDisplay* X11Display;
     LocalPlayer* Myself;
@@ -94,16 +99,19 @@ struct Aimbot {
 
             ImGui::Separator();
 
-            ImGui::SliderFloat("FOV", &MaxFOV, 1, 180, "%.0f");
+            ImGui::SliderFloat("Hipfire FOV", &HipfireFOV, 1, 180, "%.0f");
+            if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
+                ImGui::SetTooltip("Field of View");
+            ImGui::SliderFloat("Zoom FOV", &ZoomFOV, 1, 180, "%.0f");
             if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
                 ImGui::SetTooltip("Field of View");
 
             ImGui::Separator();
 
-            ImGui::SliderFloat("Min Distance", &MinDistance, 1, 500, "%.0f");
+            ImGui::SliderFloat("Hip-fire Distance", &HipfireDistance, 1, 500, "%.0f");
             if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
                 ImGui::SetTooltip("Minimum distance for Aim-Assist to work");
-            ImGui::SliderFloat("Max Distance", &MaxDistance, 1, 500, "%.0f");
+            ImGui::SliderFloat("Zoom Distance", &ZoomDistance, 1, 500, "%.0f");
             if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
                 ImGui::SetTooltip("Maximum distance for Aim-Assist to work");
 
@@ -121,9 +129,11 @@ struct Aimbot {
             Config::Aimbot::Speed = Speed;
             Config::Aimbot::Smooth = Smooth;
             Config::Aimbot::ExtraSmooth = ExtraSmooth;
-            Config::Aimbot::FOV = MaxFOV;
+            Config::Aimbot::HipfireFOV = HipfireFOV;
+            Config::Aimbot::ZoomFOV = ZoomFOV;
             Config::Aimbot::MinDistance = MinDistance;
-            Config::Aimbot::MaxDistance = MaxDistance;
+            Config::Aimbot::HipfireDistance = HipfireDistance;
+            Config::Aimbot::ZoomDistance = ZoomDistance;
             return true;
         } catch (...) {
             return false;
@@ -132,6 +142,16 @@ struct Aimbot {
 
     void Update() {
         if (!AimbotEnabled) { ReleaseTarget(); return; }
+
+        if (Myself->IsZooming) {
+            FinalFOV = ZoomFOV;
+            FinalDistance = ZoomDistance;
+        }
+        else {
+            FinalFOV = HipfireFOV;
+            FinalDistance = HipfireDistance;
+        }
+
         if (!Myself->IsCombatReady()) { TargetSelected = false; return; }
         if (!X11Display->KeyDown(XK_Shift_L) && !Myself->IsInAttack) { ReleaseTarget(); return; }
 
@@ -152,6 +172,11 @@ struct Aimbot {
         }
 
         // Where the fun begins //
+        double DistanceFromCrosshair = CalculateDistanceFromCrosshair(CurrentTarget);
+        if (DistanceFromCrosshair > FinalFOV || DistanceFromCrosshair == -1) {
+            ReleaseTarget();
+            return;
+        }
         StartAiming();
     }
 
@@ -209,7 +234,7 @@ struct Aimbot {
         const QAngle CurrentAngle = QAngle(Myself->ViewAngles.x, Myself->ViewAngles.y).fixAngle();
         
         if (Myself->WeaponProjectileSpeed > 1.0f) {
-            if(PredictBulletDrop && PredictMovement) {
+            if (PredictBulletDrop && PredictMovement) {
                 return Resolver::CalculateAimRotationNew(CameraPosition, TargetPosition, TargetVelocity, Myself->WeaponProjectileSpeed, Myself->WeaponProjectileScale, 255, Angle);
             }
             else if (PredictBulletDrop) {
@@ -231,7 +256,7 @@ struct Aimbot {
             !target->IsVisible || 
             !target->IsHostile || 
             target->Distance2DToLocalPlayer < Conversion::ToGameUnits(MinDistance) || 
-            target->Distance2DToLocalPlayer > Conversion::ToGameUnits(MaxDistance))
+            target->Distance2DToLocalPlayer > Conversion::ToGameUnits(FinalDistance))
             return false;
         return true;
     }
@@ -256,6 +281,21 @@ struct Aimbot {
         return wayB;
     }
 
+    double CalculateDistanceFromCrosshair(Player* target) {
+        Vector3D CameraPosition = Myself->CameraPosition;
+        QAngle CurrentAngle = QAngle(Myself->ViewAngles.x, Myself->ViewAngles.y).fixAngle();
+
+        Vector3D TargetPos = target->LocalOrigin;
+        if (CameraPosition.Distance(TargetPos) <= 0.0001f)
+            return -1;
+
+        QAngle TargetAngle = Resolver::CalculateAngle(CameraPosition, TargetPos);
+        if (!TargetAngle.isValid())
+            return -1;
+        
+        return CurrentAngle.distanceTo(TargetAngle);
+    }
+
     Player* FindBestTarget() {
         float NearestDistance = 9999;
         Player* BestTarget = nullptr;
@@ -265,16 +305,8 @@ struct Aimbot {
             Player* p = Players->at(i);
             if (!IsValidTarget(p)) continue;
 
-            Vector3D TargetPos = p->LocalOrigin;
-            if (CameraPosition.Distance(TargetPos) <= 0.0001f)
-                continue;
-
-            QAngle TargetAngle = Resolver::CalculateAngle(CameraPosition, TargetPos);
-            if (!TargetAngle.isValid())
-                continue;
-
-            double DistanceFromCrosshair = CurrentAngle.distanceTo(TargetAngle);
-            if (DistanceFromCrosshair > MaxFOV)
+            double DistanceFromCrosshair = CalculateDistanceFromCrosshair(p);
+            if (DistanceFromCrosshair > FinalFOV || DistanceFromCrosshair == -1)
                 continue;
 
             if (DistanceFromCrosshair < NearestDistance) {
