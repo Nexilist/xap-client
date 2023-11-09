@@ -9,6 +9,8 @@ arturzxc: for the features (ESP, Triggerbot, Aimbot) and X11Display's XTestFakeR
 
 Koelion (Braziliana): menu, aimbot calculations
 
+unguhelvu : Seer-Styled ESP
+
 unknowncheats: basic knowledge and offsets
 
 
