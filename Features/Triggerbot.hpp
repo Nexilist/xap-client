@@ -21,7 +21,7 @@ struct Triggerbot {
     bool TriggerbotEnabled = true;
     float TriggerbotRange = 200;
 
-    std::set<int> WeaponList = { 87, 100, 91, 82, 98, 90, 103, 80, 1, 84, 85, 105, 102, 107 };
+    std::set<int> WeaponList = { 1, 84, 95, 86, 102, 94, 104, 88, 110, 89, 112, 106, 108, 91 };
 
     XDisplay* X11Display;
     LocalPlayer* Myself;
