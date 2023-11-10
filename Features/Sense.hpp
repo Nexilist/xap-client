@@ -178,7 +178,10 @@ struct Sense {
             if (!p->IsValid()) continue;
             if (!p->IsHostile) continue;
             if (GlowEnabled) {
-                if (p->DistanceToLocalPlayer > (Conversion::ToGameUnits(GlowMaxDistance))) continue;
+                if (Conversion::ToGameUnits(p->DistanceToLocalPlayer) > (Conversion::ToGameUnits(GlowMaxDistance))) {
+                    p->DisableGlow();
+                    continue;
+                }
                 p->EnableGlow();
             } else {
                 p->DisableGlow();
