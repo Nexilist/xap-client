@@ -260,7 +260,7 @@ int main(int argc, char *argv[]) {
     }
 
     std::system("clear");
-    std::cout << "xap client ver 1.1" << std::endl;
+    std::cout << "xap client ver 1.2" << std::endl;
 
     // Initialize Overlay Window //
     if (!InitializeOverlayWindow()) return -1;
