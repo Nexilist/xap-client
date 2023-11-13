@@ -18,12 +18,14 @@ struct LocalPlayer {
 
     Vector2D ViewAngles;
     Vector2D PunchAngles;
-    Vector2D PunchAnglesPrevious;
-    Vector2D PunchAnglesDifferent;
 
     int WeaponIndex;
     float WeaponProjectileSpeed;
     float WeaponProjectileScale;
+    bool IsHoldingGrenade;
+
+    float ZoomFOV;
+    float TargetZoomFOV;
 
     void ResetPointer() {
         BasePointer = 0;
@@ -43,13 +45,18 @@ struct LocalPlayer {
         CameraPosition = Memory::Read<Vector3D>(BasePointer + OFF_CAMERAORIGIN);
         ViewAngles = Memory::Read<Vector2D>(BasePointer + OFF_VIEW_ANGLES);
         PunchAngles = Memory::Read<Vector2D>(BasePointer + OFF_PUNCH_ANGLES);
-        PunchAnglesDifferent = PunchAnglesPrevious.Subtract(PunchAngles);
-        PunchAnglesPrevious = PunchAngles;
 
         if (!IsDead && !IsKnocked) {
             long WeaponHandle = Memory::Read<long>(BasePointer + OFF_WEAPON_HANDLE);
             long WeaponHandleMasked = WeaponHandle & 0xffff;
             long WeaponEntity = Memory::Read<long>(OFF_REGION + OFF_ENTITY_LIST + (WeaponHandleMasked << 5));
+
+            int OffHandWeaponID = Memory::Read<int>(BasePointer + OFF_OFFHAND_WEAPON);
+            IsHoldingGrenade = OffHandWeaponID == -251 ? true : false;
+            
+            ZoomFOV = Memory::Read<float>(WeaponEntity + OFF_CURRENTZOOMFOV);
+            TargetZoomFOV = Memory::Read<float>(WeaponEntity + OFF_TARGETZOOMFOV);
+            
             WeaponIndex = Memory::Read<int>(WeaponEntity + OFF_WEAPON_INDEX);
             WeaponProjectileSpeed = Memory::Read<float>(WeaponEntity + OFF_PROJECTILESPEED);
             WeaponProjectileScale = Memory::Read<float>(WeaponEntity + OFF_PROJECTILESCALE);

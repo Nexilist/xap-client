@@ -23,18 +23,19 @@ constexpr char ConfigFile[] = "config.ini";
 namespace Config {
     namespace Aimbot {
         bool Enabled = true;
-        bool AllowTargetSwitch = true;
         bool PredictMovement = true;
         bool PredictBulletDrop = true;
-        int Hitbox = 1;
+        bool RecoilControl = true;
         float Speed = 40;
         float Smooth = 10;
         float ExtraSmooth = 250;
-        float HipfireFOV = 10;
-        float ZoomFOV = 10;
+        float FOV = 10;
+        float ZoomScale = 1.2;
         float MinDistance = 1;
         float HipfireDistance = 200;
         float ZoomDistance = 200;
+        float PitchPower = 1;
+        float YawPower = 1;
     };
 
     namespace Glow {
@@ -44,6 +45,8 @@ namespace Config {
         bool VisibleOnly = true;
         float MaxDistance = 200;
         float SeerMaxDistance = 200;
+        bool DrawFOVCircle = true;
+        float GameFOV = 120;
     };
 
     namespace Triggerbot {
@@ -57,18 +60,19 @@ void UpdateConfig() {
     if (conf.is_open()) {
         WriteSection(Aimbot);
         WritePair(Aimbot, Enabled);
-        WritePair(Aimbot, AllowTargetSwitch);
         WritePair(Aimbot, PredictMovement);
         WritePair(Aimbot, PredictBulletDrop);
-        WritePair(Aimbot, Hitbox);
         WritePair(Aimbot, Speed);
         WritePair(Aimbot, Smooth);
         WritePair(Aimbot, ExtraSmooth);
-        WritePair(Aimbot, HipfireFOV);
-        WritePair(Aimbot, ZoomFOV);
+        WritePair(Aimbot, FOV);
+        WritePair(Aimbot, ZoomScale);
         WritePair(Aimbot, MinDistance);
         WritePair(Aimbot, HipfireDistance);
         WritePair(Aimbot, ZoomDistance);
+        WritePair(Aimbot, RecoilControl);
+        WritePair(Aimbot, PitchPower);
+        WritePair(Aimbot, YawPower);
         WriteSectionEnd();
 
         WriteSection(Glow);
@@ -78,6 +82,8 @@ void UpdateConfig() {
         WritePair(Glow, VisibleOnly);
         WritePair(Glow, MaxDistance);
         WritePair(Glow, SeerMaxDistance);
+        WritePair(Glow, DrawFOVCircle);
+        WritePair(Glow, GameFOV);
         WriteSectionEnd();
 
         WriteSection(Triggerbot);
@@ -96,15 +102,13 @@ bool ReadConfig(const std::string &configFile) {
     }
     
     ReadBool(Aimbot, Enabled);
-    ReadBool(Aimbot, AllowTargetSwitch);
     ReadBool(Aimbot, PredictMovement);
     ReadBool(Aimbot, PredictBulletDrop);
-    ReadInt(Aimbot, Hitbox);
     ReadFloat(Aimbot, Speed);
     ReadFloat(Aimbot, Smooth);
     ReadFloat(Aimbot, ExtraSmooth);
-    ReadFloat(Aimbot, HipfireFOV);
-    ReadFloat(Aimbot, ZoomFOV);
+    ReadFloat(Aimbot, FOV);
+    ReadFloat(Aimbot, ZoomScale);
     ReadFloat(Aimbot, MinDistance);
     ReadFloat(Aimbot, HipfireDistance);
     ReadFloat(Aimbot, ZoomDistance);
@@ -115,9 +119,15 @@ bool ReadConfig(const std::string &configFile) {
     ReadBool(Glow, VisibleOnly);
     ReadFloat(Glow, MaxDistance);
     ReadFloat(Glow, SeerMaxDistance);
+    ReadBool(Glow, DrawFOVCircle);
+    ReadFloat(Glow, GameFOV);
 
     ReadBool(Triggerbot, Enabled);
     ReadFloat(Triggerbot, Range);
+
+    ReadBool(Aimbot, RecoilControl);
+    ReadFloat(Aimbot, PitchPower);
+    ReadFloat(Aimbot, YawPower);
 
     UpdateConfig();
     return true;

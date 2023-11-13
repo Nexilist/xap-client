@@ -14,6 +14,9 @@ struct Vector4D {
 		w = _w; 
 	}
 
+	float operator[](int i) const;
+	float& operator[](int i);
+
 	float length() {
 		return std::sqrt(x*x + y*y + z*z + w*w);
 	}

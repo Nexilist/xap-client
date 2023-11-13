@@ -3,16 +3,6 @@
 #include <algorithm>
 #include <limits>
 
-enum class AngleSmoothType : int{
-    LerpSmoothing = 0,
-    LinearSmoothing = 1,
-    ExponentialSmoothing = 2,
-    SCurveSmoothing = 3,
-    BezierSmoothing = 4,
-    AccelerationSmoothing = 5,
-    JerkLimitedSmoothing = 6
-};
-
 struct QAngle {
 
     float x;

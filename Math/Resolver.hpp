@@ -16,12 +16,12 @@ public:
     }
 
     static Vector3D GetTargetPosition(const Vector3D& targetPosition, Vector3D targetVelocity, float time) {
-        return targetPosition.Subtract((targetVelocity.Multiply(time)));
+        return targetPosition.Add((targetVelocity.Multiply(time))); // Subtract
     }
 
     static float GetTimeToTarget(Vector3D startPosition, Vector3D endPosition, float bulletSpeed) {
         float distance = (endPosition.Subtract(startPosition)).Magnitude();
-        return distance / bulletSpeed * 1000;
+        return distance / bulletSpeed; // * 1000
     }
 
     static float GetBasicBulletDrop(Vector3D startPosition, Vector3D endPosition, float bulletSpeed, float bulletDropRate) {

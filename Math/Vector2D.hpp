@@ -6,6 +6,9 @@ struct Vector2D {
 
     Vector2D(float x_val, float y_val) : x(x_val), y(y_val) {}
 
+    float operator[](int i) const;
+	float& operator[](int i);
+
     Vector2D Subtract(const Vector2D& other) const {
         return Vector2D(x - other.x, y - other.y);
     }

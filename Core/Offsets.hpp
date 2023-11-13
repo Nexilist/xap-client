@@ -22,7 +22,7 @@ constexpr long OFF_CAMERAORIGIN = 0x1f00;                     //[Miscellaneous]-
 constexpr long OFF_STUDIOHDR = 0x1020;                        //[Miscellaneous]->CBaseAnimating!m_pStudioHdr
 constexpr long OFF_BONES = 0x0dd0 + 0x48;                     //m_nForceBone
 
-constexpr long OFF_LOCAL_ORIGIN = 0x0188;                     //[DataMap.C_BaseEntity]->m_localOrigin
+constexpr long OFF_LOCAL_ORIGIN = 0x017c;                     //[DataMap.C_BaseEntity]->m_vecAbsOrigin
 constexpr long OFF_ABSVELOCITY = 0x0170;                      //[DataMap.C_BaseEntity]->m_vecAbsVelocity
 
 constexpr long OFF_ZOOMING = 0x1c01;                          //[RecvTable.DT_Player]->m_bZooming
@@ -33,13 +33,16 @@ constexpr long OFF_BLEEDOUT_STATE = 0x2710;                   //[RecvTable.DT_Pl
 constexpr long OFF_LAST_VISIBLE_TIME = 0x19bd + 0x3;          //[RecvTable.DT_BaseCombatCharacter]->m_hudInfo_visibilityTestAlwaysPasses + 0x3
 constexpr long OFF_LAST_AIMEDAT_TIME = 0x19bd + 0x3 + 0x8;    //[RecvTable.DT_BaseCombatCharacter]->m_hudInfo_visibilityTestAlwaysPasses + 0x3 + 0x8
 constexpr long OFF_VIEW_ANGLES = 0x2564 - 0x14;               //[DataMap.C_Player]-> m_ammoPoolCapacity - 0x14
-constexpr long OFF_PUNCH_ANGLES = 0x23f8;                     //[DataMap.C_Player]->m_currentFrameLocalPlayer.m_vecPunchBase_Angle
+constexpr long OFF_PUNCH_ANGLES = 0x2468;                     //[DataMap.C_Player]->m_currentFrameLocalPlayer.m_vecPunchWeapon_Angle
 
 // Weapon 
 constexpr long OFF_WEAPON_HANDLE = 0x1964;                    //[RecvTable.DT_Player]->m_latestPrimaryWeapons
 constexpr long OFF_WEAPON_INDEX = 0x17a8;                     //[RecvTable.DT_WeaponX]->m_weaponNameIndex
 constexpr long OFF_PROJECTILESCALE = 0x1EC4;                  //projectile_gravity_scale + [WeaponSettingsMeta]base
 constexpr long OFF_PROJECTILESPEED = 0x1EBC;                  //projectile_launch_speed + [WeaponSettingsMeta]base
+constexpr long OFF_OFFHAND_WEAPON = 0x1974;                   //m_latestNonOffhandWeapons
+constexpr long OFF_CURRENTZOOMFOV = 0x1600 + 0x00b8;          //m_playerData + m_curZoomFOV
+constexpr long OFF_TARGETZOOMFOV = 0x1600 + 0x00bc;           //m_playerData + m_targetZoomFOV
 
 // Glow
 constexpr long OFF_GLOW_ENABLE = 0x294;                       //Script_Highlight_GetCurrentContext

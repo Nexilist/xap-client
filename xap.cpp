@@ -103,18 +103,19 @@ void LoadConfig() {
 
     // Aimbot //
     AimAssist->AimbotEnabled = Config::Aimbot::Enabled;
-    AimAssist->AllowTargetSwitch = Config::Aimbot::AllowTargetSwitch;
     AimAssist->PredictMovement = Config::Aimbot::PredictMovement;
     AimAssist->PredictBulletDrop = Config::Aimbot::PredictBulletDrop;
-    AimAssist->Hitbox = static_cast<HitboxType>(Config::Aimbot::Hitbox);
     AimAssist->Speed = Config::Aimbot::Speed;
     AimAssist->Smooth = Config::Aimbot::Smooth;
     AimAssist->ExtraSmooth = Config::Aimbot::ExtraSmooth;
-    AimAssist->HipfireFOV = Config::Aimbot::HipfireFOV;
-    AimAssist->ZoomFOV = Config::Aimbot::ZoomFOV;
+    AimAssist->FOV = Config::Aimbot::FOV;
+    AimAssist->ZoomScale = Config::Aimbot::ZoomScale;
     AimAssist->MinDistance = Config::Aimbot::MinDistance;
     AimAssist->HipfireDistance = Config::Aimbot::HipfireDistance;
     AimAssist->ZoomDistance = Config::Aimbot::ZoomDistance;
+    AimAssist->RecoilEnabled = Config::Aimbot::RecoilControl;
+    AimAssist->PitchPower = Config::Aimbot::PitchPower;
+    AimAssist->YawPower = Config::Aimbot::YawPower;
 
     // ESP //
     ESP->GlowEnabled = Config::Glow::Enabled;
@@ -123,6 +124,8 @@ void LoadConfig() {
     ESP->DrawSeer = Config::Glow::DrawSeer;
     ESP->SeerMaxDistance = Config::Glow::SeerMaxDistance;
     ESP->VisibleOnly = Config::Glow::VisibleOnly;
+    ESP->DrawFOVCircle = Config::Glow::DrawFOVCircle;
+    ESP->GameFOV = Config::Glow::GameFOV;
 
     // Triggerbot //
     Trigger->TriggerbotEnabled = Config::Triggerbot::Enabled;
@@ -153,7 +156,7 @@ void RenderUI() {
 	);
 	Canvas = ImGui::GetWindowDrawList();
     if (Map->IsPlayable)
-        ESP->RenderDrawings(Canvas, AimAssist, Myself);
+        ESP->RenderDrawings(Canvas, AimAssist, Myself, OverlayWindow);
 	ImGui::End();
 
     if (!IsMenuOpened) return;
@@ -235,7 +238,7 @@ bool UpdateCore() {
 
         return true;
     } catch(const std::exception& ex) {
-        //std::cout << "Error: " << ex.what() << std::endl;
+        std::cout << "Error: " << ex.what() << std::endl;
         return true;
     }
 
@@ -257,7 +260,7 @@ int main(int argc, char *argv[]) {
     }
 
     std::system("clear");
-    std::cout << "xap client ver 1.0" << std::endl;
+    std::cout << "xap client ver 1.1" << std::endl;
 
     // Initialize Overlay Window //
     if (!InitializeOverlayWindow()) return -1;

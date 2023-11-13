@@ -8,6 +8,7 @@
 
 #include "../Features/Aimbot.hpp"
 
+#include "../Overlay/Overlay.hpp"
 #include "../Overlay/Renderer.hpp"
 
 #include "../Utils/Memory.hpp"
@@ -37,8 +38,12 @@ struct Sense {
     bool DrawSeer = true;
     bool VisibleOnly = true;
     float SeerMaxDistance = 200;
-    bool DrawTracers = true;
-    bool DrawDistance = true;
+
+    bool DrawTracers = true; // Unused
+    bool DrawDistance = true; // Unused
+
+    bool DrawFOVCircle = true;
+    float GameFOV = 120;
 
     std::vector<Player*>* Players;
     Camera* GameCamera;
@@ -64,6 +69,7 @@ struct Sense {
 
             ImGui::Separator();
 
+            // Drawings
             ImGui::Checkbox("Draw Health and Armor##ESP", &DrawSeer);
             if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
                 ImGui::SetTooltip("Draw Health Bar and Armor");
@@ -74,37 +80,19 @@ struct Sense {
             if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
                 ImGui::SetTooltip("Only draw those in range.");
 
+            ImGui::Separator();
+
+            ImGui::Checkbox("Draw FOV Circle", &DrawFOVCircle);
+            if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
+                ImGui::SetTooltip("Draw FOV Circle");
+            ImGui::SliderFloat("Game's FOV", &GameFOV, 70, 120, "%.0f");
+            if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
+                ImGui::SetTooltip("Your current FOV in Settings");
+
             ImGui::EndTabItem();
         }
     }
-
-    void RenderDrawings(ImDrawList* Canvas, Aimbot* AimAssistState, LocalPlayer* Myself) {
-        if (!Myself->IsCombatReady()) return;
-        if (AimAssistState->TargetSelected && AimAssistState->CurrentTarget) {
-            Vector2D headScreenPosition;
-            GameCamera->WorldToScreen(AimAssistState->CurrentTarget->GetBonePosition(HitboxType::Head), headScreenPosition);
-            if (headScreenPosition.IsZeroVector())
-                return;
-
-            Renderer::DrawSeer(Canvas, headScreenPosition.x, headScreenPosition.y - 20, AimAssistState->CurrentTarget->Shield, AimAssistState->CurrentTarget->MaxShield, AimAssistState->CurrentTarget->Health);
-            return;
-        }
-
-        for (int i = 0; i < Players->size(); i++) {
-            Player* p = Players->at(i);
-            if (!p->IsCombatReady() || !p->IsVisible || !p->IsHostile || p->DistanceToLocalPlayer > (Conversion::ToGameUnits(SeerMaxDistance)) || Myself->BasePointer == p->BasePointer) continue;
-
-            if (DrawSeer) {
-                Vector2D headScreenPosition;
-                GameCamera->WorldToScreen(p->GetBonePosition(HitboxType::Head), headScreenPosition);
-                if (headScreenPosition.IsZeroVector())
-                    continue;
-
-                Renderer::DrawSeer(Canvas, headScreenPosition.x, headScreenPosition.y - 20, p->Shield, p->MaxShield, p->Health);
-            }
-        }
-    }
-
+    
     bool Save() {
         try {
             Config::Glow::Enabled = GlowEnabled;
@@ -113,6 +101,8 @@ struct Sense {
             Config::Glow::DrawSeer = DrawSeer;
             Config::Glow::SeerMaxDistance = SeerMaxDistance;
             Config::Glow::VisibleOnly = VisibleOnly;
+            Config::Glow::DrawFOVCircle = DrawFOVCircle;
+            Config::Glow::GameFOV = GameFOV;
             return true;
         } catch (...) {
             return false;
@@ -136,10 +126,64 @@ struct Sense {
         StoredGlowMode->push_back(FourthStyle);
     }
 
+    void RenderDrawings(ImDrawList* Canvas, Aimbot* AimAssistState, LocalPlayer* Myself, Overlay OverlayWindow) {
+        if (!Myself->IsCombatReady()) return;
+        if (DrawFOVCircle) {
+            int ScreenWidth;
+            int ScreenHeight;
+            float FOV = std::min(AimAssistState->FOV, AimAssistState->FOV * (AimAssistState->GetFOVScale() * AimAssistState->ZoomScale));
+            OverlayWindow.GetScreenResolution(ScreenWidth, ScreenHeight);
+            float Radius = tanf(DEG2RAD(FOV) / 2) / tanf(DEG2RAD(GameFOV) / 2) * ScreenWidth;
+            Renderer::DrawCircle(Canvas, Vector2D(ScreenWidth / 2, ScreenHeight / 2), Radius, 20, ImColor(255, 255, 255), 2);
+        }
+
+        // Draw Seer on locked target
+        if (AimAssistState->TargetSelected && AimAssistState->CurrentTarget) {
+            Vector2D headScreenPosition;
+            GameCamera->WorldToScreen(AimAssistState->CurrentTarget->GetBonePosition(HitboxType::Head), headScreenPosition);
+            if (headScreenPosition.IsZeroVector())
+                return;
+
+            Renderer::DrawSeer(Canvas, headScreenPosition.x, headScreenPosition.y - 20, AimAssistState->CurrentTarget->Shield, AimAssistState->CurrentTarget->MaxShield, AimAssistState->CurrentTarget->Health);
+            return;
+        }
+
+        // Draw Seer on everyone
+        for (int i = 0; i < Players->size(); i++) {
+            Player* p = Players->at(i);
+            if (!p->IsCombatReady() || !p->IsVisible || !p->IsHostile || p->DistanceToLocalPlayer > (Conversion::ToGameUnits(SeerMaxDistance)) || Myself->BasePointer == p->BasePointer) continue;
+
+            if (DrawSeer) {
+                Vector2D headScreenPosition;
+                GameCamera->WorldToScreen(p->GetBonePosition(HitboxType::Head), headScreenPosition);
+                if (headScreenPosition.IsZeroVector())
+                    continue;
+
+                Renderer::DrawSeer(Canvas, headScreenPosition.x, headScreenPosition.y - 20, p->Shield, p->MaxShield, p->Health);
+            }
+        }
+    }
+
+
     void SetGlowState(long HighlightSettingsPointer, long HighlightSize, int HighlightID, GlowMode NewGlowMode) {
         const GlowMode oldGlowMode = Memory::Read<GlowMode>(HighlightSettingsPointer + (HighlightSize * HighlightID) + 4);
         if (NewGlowMode != oldGlowMode)
             Memory::Write<GlowMode>(HighlightSettingsPointer + (HighlightSize * HighlightID) + 4, NewGlowMode);
+    }
+
+    void SetColorState(long HighlightSettingsPointer, long HighlightSize, int HighlightID, Color NewColor) {
+        const Color oldColor = Memory::Read<Color>(HighlightSettingsPointer + (HighlightSize * HighlightID) + 8);
+        if (oldColor != NewColor)
+            Memory::Write<Color>(HighlightSettingsPointer + (HighlightSize * HighlightID) + 8, NewColor);
+    }
+
+    void SetGlow(Player* Target, int GlowEnabled, int GlowThroughWall, int HighlightID) {
+        if (Target->GlowEnable != GlowEnabled) Memory::Write<int>(Target->BasePointer + OFF_GLOW_ENABLE, GlowEnabled);
+        if (Target->GlowThroughWall != GlowThroughWall) {
+            Memory::Write<int>(Target->BasePointer + OFF_GLOW_THROUGH_WALL, GlowThroughWall);
+            Memory::Write<int>(Target->BasePointer + OFF_GLOW_FIX, 2);
+        }
+        if (Target->HighlightID != HighlightID) Memory::Write<int>(Target->BasePointer + OFF_GLOW_HIGHLIGHT_ID + 1, HighlightID);
     }
 
     void Update() {
@@ -149,11 +193,10 @@ struct Sense {
         // Item Glow //
         if (ItemGlow) {
             for (int highlightId = 31; highlightId < 35; highlightId++) {
-                const GlowMode newGlowMode = { 137,138,35,127 };
+                const GlowMode newGlowMode = { 137, 138, 35, 127 };
                 SetGlowState(HighlightSettingsPointer, HighlightSize, highlightId, newGlowMode);
             }
-        }
-        else {
+        } else {
             for (int highlightId = 31; highlightId < 35; highlightId++) {
                 const GlowMode newGlowMode = StoredGlowMode->at(highlightId);
                 SetGlowState(HighlightSettingsPointer, HighlightSize, highlightId, newGlowMode);
@@ -161,40 +204,61 @@ struct Sense {
         }
 
         // Player Glow //
-        const GlowMode VisibleMode = { 2, 6, 40, 127 };
-        const GlowMode InvisibleMode = { 2, 108, 40, 100 };
-        const GlowMode NoGlowMode = { 0, 0, 0, 0 };
+        // -> Visible
+        const GlowMode VisibleMode = { 2, 6, 32, 127 };
+        const Color VisibleColor = { 0.6, 3, 2.04 };
+        SetGlowState(HighlightSettingsPointer, HighlightSize, 0, VisibleMode);
+        SetColorState(HighlightSettingsPointer, HighlightSize, 0, VisibleColor);
 
-        if (!GlowEnabled) {
-            SetGlowState(HighlightSettingsPointer, HighlightSize, 0, NoGlowMode);
-            SetGlowState(HighlightSettingsPointer, HighlightSize, 1, NoGlowMode);
-        } else {
-            SetGlowState(HighlightSettingsPointer, HighlightSize, 0, VisibleMode);
-            SetGlowState(HighlightSettingsPointer, HighlightSize, 1, InvisibleMode);
-        }
+        // -> Invisible
+        const GlowMode InvisibleMode = { 2, 6, 32, 100 };
+        const Color InvisibleColor = { 4.5, 0.6, 0.6 };
+        SetGlowState(HighlightSettingsPointer, HighlightSize, 1, InvisibleMode);
+        SetColorState(HighlightSettingsPointer, HighlightSize, 1, InvisibleColor);
+
+        // -> Knocked
+        const GlowMode KnockedMode = { 2, 6, 32, 127 };
+        const Color KnockedColor = { 1, 1, 0.35 };
+        SetGlowState(HighlightSettingsPointer, HighlightSize, 90, KnockedMode);
+        SetColorState(HighlightSettingsPointer, HighlightSize, 90, KnockedColor);
+
+        // -> Disabled
+        const GlowMode DisabledMode = { 0, 0, 0, 0 };
+        const Color DisabledColor = { 1, 1, 1 };
+        SetGlowState(HighlightSettingsPointer, HighlightSize, 91, DisabledMode);
+        SetColorState(HighlightSettingsPointer, HighlightSize, 91, DisabledColor);
+
+        // -> Locked On
+        const GlowMode LockedOnMode = { 136, 6, 32, 127 };
+        const Color LockedOnColor = { 0, 0.75, 0.75 };
+        SetGlowState(HighlightSettingsPointer, HighlightSize, 92, LockedOnMode);
+        SetColorState(HighlightSettingsPointer, HighlightSize, 92, LockedOnColor);
+
 
         for (int i = 0; i < Players->size(); i++) {
-            Player* p = Players->at(i);
-            if (!p->IsValid()) continue;
-            if (!p->IsHostile) continue;
+            Player* Target = Players->at(i);
+            if (!Target->IsValid()) continue;
+            if (!Target->IsHostile) continue;
+
             if (GlowEnabled) {
-                if (Conversion::ToGameUnits(p->DistanceToLocalPlayer) > (Conversion::ToGameUnits(GlowMaxDistance))) {
-                    p->DisableGlow();
+                if (Target->IsLockedOn) {
+                    SetGlow(Target, 1, 2, 92);
                     continue;
                 }
-                p->EnableGlow();
-            } else {
-                p->DisableGlow();
+
+                if (Target->DistanceToLocalPlayer < Conversion::ToGameUnits(GlowMaxDistance)) {
+                    if (Target->IsKnocked) {
+                        SetGlow(Target, 1, 2, 90);
+                        continue;
+                    }
+
+                    int Highlight = (Target->IsVisible) ? 0 : 1;
+                    SetGlow(Target, 1, 2, Highlight);
+                    continue;
+                }
             }
+
+            SetGlow(Target, 0, 0, 91);
         }
-
-        // Target Locked Glow //
-        const GlowMode LockedGlowMode = { 109, 108, 40, 100 };
-        const Color LockedOnColor = { 0, 5, 5 };
-        SetGlowState(HighlightSettingsPointer, HighlightSize, 2, LockedGlowMode);
-        const Color oldColor = Memory::Read<Color>(HighlightSettingsPointer + (HighlightSize * 2) + 8);
-        if (oldColor != LockedOnColor)
-            Memory::Write<Color>(HighlightSettingsPointer + (HighlightSize * 2) + 8, LockedOnColor);
-
     }
 };

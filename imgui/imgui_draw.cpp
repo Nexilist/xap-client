@@ -1410,23 +1410,6 @@ void ImDrawList::AddRectFilled(const ImVec2& p_min, const ImVec2& p_max, ImU32 c
     }
 }
 
-// p_min = upper-left, p_max = lower-right
-void ImDrawList::AddRectFilledMultiColor(const ImVec2& p_min, const ImVec2& p_max, ImU32 col_upr_left, ImU32 col_upr_right, ImU32 col_bot_right, ImU32 col_bot_left)
-{
-    if (((col_upr_left | col_upr_right | col_bot_right | col_bot_left) & IM_COL32_A_MASK) == 0)
-        return;
-
-    const ImVec2 uv = _Data->TexUvWhitePixel;
-    PrimReserve(6, 4);
-    PrimWriteIdx((ImDrawIdx)(_VtxCurrentIdx)); PrimWriteIdx((ImDrawIdx)(_VtxCurrentIdx + 1)); PrimWriteIdx((ImDrawIdx)(_VtxCurrentIdx + 2));
-    PrimWriteIdx((ImDrawIdx)(_VtxCurrentIdx)); PrimWriteIdx((ImDrawIdx)(_VtxCurrentIdx + 2)); PrimWriteIdx((ImDrawIdx)(_VtxCurrentIdx + 3));
-    PrimWriteVtx(p_min, uv, col_upr_left);
-    PrimWriteVtx(ImVec2(p_max.x, p_min.y), uv, col_upr_right);
-    PrimWriteVtx(p_max, uv, col_bot_right);
-    PrimWriteVtx(ImVec2(p_min.x, p_max.y), uv, col_bot_left);
-}
-
-
 void ImDrawList::AddHexagon(const ImVec2& p1, const ImVec2& p2, const ImVec2& p3, const ImVec2& p4, const ImVec2& p5, const ImVec2& p6, ImU32 col, float thickness)
 {
     if ((col & IM_COL32_A_MASK) == 0)
@@ -1455,6 +1438,21 @@ void ImDrawList::AddHexagonFilled(const ImVec2& p1, const ImVec2& p2, const ImVe
     PathFillConvex(col);
 }
 
+// p_min = upper-left, p_max = lower-right
+void ImDrawList::AddRectFilledMultiColor(const ImVec2& p_min, const ImVec2& p_max, ImU32 col_upr_left, ImU32 col_upr_right, ImU32 col_bot_right, ImU32 col_bot_left)
+{
+    if (((col_upr_left | col_upr_right | col_bot_right | col_bot_left) & IM_COL32_A_MASK) == 0)
+        return;
+
+    const ImVec2 uv = _Data->TexUvWhitePixel;
+    PrimReserve(6, 4);
+    PrimWriteIdx((ImDrawIdx)(_VtxCurrentIdx)); PrimWriteIdx((ImDrawIdx)(_VtxCurrentIdx + 1)); PrimWriteIdx((ImDrawIdx)(_VtxCurrentIdx + 2));
+    PrimWriteIdx((ImDrawIdx)(_VtxCurrentIdx)); PrimWriteIdx((ImDrawIdx)(_VtxCurrentIdx + 2)); PrimWriteIdx((ImDrawIdx)(_VtxCurrentIdx + 3));
+    PrimWriteVtx(p_min, uv, col_upr_left);
+    PrimWriteVtx(ImVec2(p_max.x, p_min.y), uv, col_upr_right);
+    PrimWriteVtx(p_max, uv, col_bot_right);
+    PrimWriteVtx(ImVec2(p_min.x, p_max.y), uv, col_bot_left);
+}
 
 void ImDrawList::AddQuad(const ImVec2& p1, const ImVec2& p2, const ImVec2& p3, const ImVec2& p4, ImU32 col, float thickness)
 {
