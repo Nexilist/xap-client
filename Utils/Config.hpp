@@ -23,6 +23,7 @@ constexpr char ConfigFile[] = "config.ini";
 namespace Config {
     namespace Aimbot {
         bool Enabled = true;
+        bool WInScope = true;
         bool PredictMovement = true;
         bool PredictBulletDrop = true;
         bool RecoilControl = true;
@@ -60,6 +61,7 @@ void UpdateConfig() {
     if (conf.is_open()) {
         WriteSection(Aimbot);
         WritePair(Aimbot, Enabled);
+        WritePair(Aimbot, WInScope);
         WritePair(Aimbot, PredictMovement);
         WritePair(Aimbot, PredictBulletDrop);
         WritePair(Aimbot, Speed);
@@ -102,6 +104,7 @@ bool ReadConfig(const std::string &configFile) {
     }
     
     ReadBool(Aimbot, Enabled);
+    ReadBool(Aimbot, WInScope);
     ReadBool(Aimbot, PredictMovement);
     ReadBool(Aimbot, PredictBulletDrop);
     ReadFloat(Aimbot, Speed);
