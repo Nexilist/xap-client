@@ -14,6 +14,7 @@ I'll will be very grateful if you do so.
 - Bone Selection is now replaced with auto select best bone
 - Removed Allow Target Switch because it somehow causes xap-client to crash
 - Aim-Assist will no longer be activated while holding grenade
+- Add Aim in ADS
 
 # Credits
 arturzxc: for the features (ESP, Triggerbot, Aimbot) and X11Display's XTestFakeRelativeMotionEvent
@@ -50,8 +51,8 @@ unknowncheats: basic knowledge and offsets
 
 **3. Clone repo**
 
-    git clone https://github.com/Nexilist/xap-client.git
-    cd xap-client
+    git clone https://github.com/Gasferr/xapex.git
+    cd xapex
 
 **4. Build and Run**
 
