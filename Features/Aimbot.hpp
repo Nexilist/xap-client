@@ -26,7 +26,8 @@
 
 struct Aimbot {
     bool AimbotEnabled = true;
-
+    bool WInScope = true;
+    
     bool PredictMovement = true;
     bool PredictBulletDrop = true;
 
@@ -64,8 +65,12 @@ struct Aimbot {
             ImGui::Checkbox("Aim - Assist", &AimbotEnabled);
             if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
                 ImGui::SetTooltip("Toggle the Aim-Assist");
-
+            ImGui::SameLine();
+            ImGui::Checkbox("Aim in ADS", &WInScope);
+             if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
+                ImGui::SetTooltip("Aim in ADS");
             ImGui::Separator();
+
 
             ImGui::Checkbox("Recoil Control", &RecoilEnabled);
             if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
@@ -95,7 +100,7 @@ struct Aimbot {
 
             ImGui::Separator();
 
-            ImGui::SliderFloat("Smooth", &Smooth, 1, 20, "%.0f");
+            ImGui::SliderFloat("Smooth", &Smooth, 1, 60, "%.0f");
             if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
                 ImGui::SetTooltip("Smoothness for the Aim-Assist\nSmaller = Faster and vice versa");
             ImGui::SliderFloat("Extra Smooth", &ExtraSmooth, 100, 5000, "%.0f");
@@ -125,6 +130,7 @@ struct Aimbot {
     bool Save() {
         try {
             Config::Aimbot::Enabled = AimbotEnabled;
+            Config::Aimbot::WInScope = WInScope;
             Config::Aimbot::PredictMovement = PredictMovement;
             Config::Aimbot::PredictBulletDrop = PredictBulletDrop;
             Config::Aimbot::Speed = Speed;
@@ -151,9 +157,14 @@ struct Aimbot {
             FinalDistance = ZoomDistance;
         else FinalDistance = HipfireDistance;
 
-        if (!Myself->IsCombatReady()) { ReleaseTarget(); return; }
-        if (!X11Display->KeyDown(XK_Shift_L) && !Myself->IsInAttack) { ReleaseTarget(); return; }
+  // If keys arent pressed
+        if (!X11Display->KeyDown(XK_Alt_L) && 
+            !(Myself->IsInAttack) &&
+            !(Myself->IsZooming && WInScope)) { ReleaseTarget(); return; }
+
+        // If not greande
         if (Myself->IsHoldingGrenade) { ReleaseTarget(); return; }
+
 
         Player* Target = CurrentTarget;
         if (!IsValidTarget(Target)) {
