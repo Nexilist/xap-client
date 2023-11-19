@@ -15,6 +15,7 @@ I'll will be very grateful if you do so.
 - Removed Allow Target Switch because it somehow causes xap-client to crash
 - Aim-Assist will no longer be activated while holding grenade
 - Add Aim in ADS
+- Add Spectator list
 
 # Credits
 arturzxc: for the features (ESP, Triggerbot, Aimbot) and X11Display's XTestFakeRelativeMotionEvent
