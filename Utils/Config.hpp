@@ -27,16 +27,16 @@ namespace Config {
         bool PredictMovement = true;
         bool PredictBulletDrop = true;
         bool RecoilControl = true;
-        float Speed = 40;
-        float Smooth = 10;
+        float Speed = 50;
+        float Smooth = 40;
         float ExtraSmooth = 250;
-        float FOV = 10;
+        float FOV = 15;
         float ZoomScale = 1.2;
         float MinDistance = 1;
-        float HipfireDistance = 200;
-        float ZoomDistance = 200;
-        float PitchPower = 1;
-        float YawPower = 1;
+        float HipfireDistance = 300;
+        float ZoomDistance = 300;
+        float PitchPower = 10;
+        float YawPower = 10;
     };
 
     namespace Glow {
@@ -44,15 +44,19 @@ namespace Config {
         bool ItemGlow = true;
         bool DrawSeer = true;
         bool VisibleOnly = true;
-        float MaxDistance = 200;
-        float SeerMaxDistance = 200;
+        float MaxDistance = 150;
+        float SeerMaxDistance = 500;
         bool DrawFOVCircle = true;
-        float GameFOV = 120;
+        float GameFOV = 90;
     };
 
     namespace Triggerbot {
         bool Enabled = true;
-        float Range = 200;
+        float Range = 300;
+    };
+
+            namespace Other {
+        bool spectator = true;
     };
 };
 
@@ -91,6 +95,10 @@ void UpdateConfig() {
         WriteSection(Triggerbot);
         WritePair(Triggerbot, Enabled);
         WritePair(Triggerbot, Range);
+        WriteSectionEnd();
+
+        WriteSection(Other);
+        WritePair(Other, spectator);
         WriteSectionEnd();
         conf.close();
     }
@@ -131,6 +139,8 @@ bool ReadConfig(const std::string &configFile) {
     ReadBool(Aimbot, RecoilControl);
     ReadFloat(Aimbot, PitchPower);
     ReadFloat(Aimbot, YawPower);
+
+    ReadBool(Other, spectator);
 
     UpdateConfig();
     return true;

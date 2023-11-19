@@ -94,6 +94,14 @@ namespace Memory {
         return std::string(buffer);
     }
 
+    std::string ReadString(long address, int size) {
+        char buffer[size] = { 0 };
+        bool success = Read(address, &buffer, size);
+        if (!success)
+            throw std::invalid_argument("Failed to read String at address: " + address);
+        return std::string(buffer);
+    }
+
     short ReadShort(long address) {
         int size = sizeof(short);
         short buffer;

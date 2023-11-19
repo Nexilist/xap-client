@@ -49,16 +49,19 @@ struct Aimbot {
     XDisplay* X11Display;
     LocalPlayer* Myself;
     std::vector<Player*>* Players;
+    
 
     Player* CurrentTarget = nullptr;
     bool TargetSelected = true;
     QAngle RCSLastPunch;
+   
 
     Aimbot(XDisplay* X11Display, LocalPlayer* Myself, std::vector<Player*>* GamePlayers) {
         this->X11Display = X11Display;
         this->Myself = Myself;
         this->Players = GamePlayers;
     }
+
 
     void RenderUI() {
         if (ImGui::BeginTabItem("Aim", nullptr, ImGuiTabItemFlags_NoCloseWithMiddleMouseButton | ImGuiTabItemFlags_NoReorder)) {

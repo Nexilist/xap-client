@@ -20,6 +20,7 @@
 #include "Features/Aimbot.hpp"
 #include "Features/Sense.hpp"
 #include "Features/Triggerbot.hpp"
+#include "Features/Other.hpp"
 
 #include "Overlay/Overlay.hpp"
 
@@ -46,6 +47,7 @@ std::vector<Player*>* Players = new std::vector<Player*>;
 Sense* ESP = new Sense(Players, GameCamera);
 Aimbot* AimAssist = new Aimbot(X11Display, Myself, Players);
 Triggerbot* Trigger = new Triggerbot(X11Display, Myself, Players);
+Other* Utils = new Other(Players, Myself);
 
 // Booleans and Variables
 bool IsMenuOpened = true;
@@ -130,12 +132,16 @@ void LoadConfig() {
     // Triggerbot //
     Trigger->TriggerbotEnabled = Config::Triggerbot::Enabled;
     Trigger->TriggerbotRange = Config::Triggerbot::Range;
+
+    //Other//
+    Utils->spectator = Config::Other::spectator;
 }
 
 void SaveConfig() {
     if (!AimAssist->Save()) std::cout << "something went wrong trying to save Aimbot settings" << std::endl;
     if (!ESP->Save()) std::cout << "something went wrong trying to save ESP settings" << std::endl;
     if (!Trigger->Save()) std::cout << "something went wrong trying to save Triggerbot settings" << std::endl;
+    if (!Utils->Save()) std::cout << "something went wrong trying to save other settings" << std::endl;
     UpdateConfig();
 }
 
@@ -180,6 +186,7 @@ void RenderUI() {
         AimAssist->RenderUI();
         Trigger->RenderUI();
         ESP->RenderUI();
+        Utils->RenderUI();
 
         // Draw Credits //
         if (ImGui::BeginTabItem("Credits", nullptr, ImGuiTabItemFlags_NoCloseWithMiddleMouseButton | ImGuiTabItemFlags_NoReorder)) {
@@ -235,6 +242,7 @@ bool UpdateCore() {
         ESP->Update();
         AimAssist->Update();
         Trigger->Update();
+        Utils->Update();
 
         return true;
     } catch(const std::exception& ex) {

@@ -35,6 +35,7 @@ struct Player {
     int LastTimeAimedAt;
     int LastTimeAimedAtPrevious;
     bool IsAimedAt;
+    float view_yaw;
 
     int LastVisibleTime;
     int LastTimeVisiblePrevious;
@@ -46,12 +47,23 @@ struct Player {
 
     float DistanceToLocalPlayer;
     float Distance2DToLocalPlayer;
+    float yaw;
 
     bool IsLockedOn;
+
+    uintptr_t nameOffset;
+    uintptr_t nameIndex;
 
     Player(int PlayerIndex, LocalPlayer* Me) {
         this->Index = PlayerIndex;
         this->Myself = Me;
+    }
+
+    std::string getPlayerName(){
+        nameIndex = Memory::Read<uintptr_t>(BasePointer + OFF_NAMEINDEX);       //player + 0x38
+        nameOffset = Memory::Read<uintptr_t>(OFF_REGION + OFF_NAMELIST + ((nameIndex - 1) << 4 ));       //Region + NameList
+        std::string playerName = Memory::ReadString(nameOffset, 64);
+        return playerName;
     }
 
     void Read() {
@@ -64,8 +76,10 @@ struct Player {
         if (!IsPlayer() && !IsDummy()) { BasePointer = 0; return; }
         IsDead = (IsDummy()) ? false : Memory::Read<short>(BasePointer + OFF_LIFE_STATE) > 0;
         IsKnocked = (IsDummy()) ? false : Memory::Read<short>(BasePointer + OFF_BLEEDOUT_STATE) > 0;
+        yaw = Memory::Read<float>(BasePointer + OFF_YAW);
 
         LocalOrigin = Memory::Read<Vector3D>(BasePointer + OFF_LOCAL_ORIGIN);
+        view_yaw = Memory::Read<float>(BasePointer + OFF_YAW);
         AbsoluteVelocity = Memory::Read<Vector3D>(BasePointer + OFF_ABSVELOCITY);
 
         GlowEnable = Memory::Read<int>(BasePointer + OFF_GLOW_ENABLE);

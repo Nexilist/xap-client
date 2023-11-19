@@ -29,6 +29,7 @@ struct Sense {
     // Glow
     bool GlowEnabled = true;
     float GlowMaxDistance = 200;
+    bool spectator = true;
 
     // Item Glow
     std::vector<GlowMode>* StoredGlowMode = new std::vector<GlowMode>;
@@ -39,6 +40,7 @@ struct Sense {
     bool VisibleOnly = true;
     float SeerMaxDistance = 200;
 
+
     bool DrawTracers = true; // Unused
     bool DrawDistance = true; // Unused
 
@@ -47,6 +49,7 @@ struct Sense {
 
     std::vector<Player*>* Players;
     Camera* GameCamera;
+    LocalPlayer* localplayer;
 
     Sense(std::vector<Player*>* Players, Camera* GameCamera) {
         this->Players = Players;
@@ -66,6 +69,10 @@ struct Sense {
             ImGui::SliderFloat("Max Distance", &GlowMaxDistance, 0, 1000, "%.0f");
             if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
                 ImGui::SetTooltip("Only those in range will glow");
+
+            ImGui::Separator();
+
+            ImGui::Checkbox("Check list spectator", &spectator);
 
             ImGui::Separator();
 
@@ -91,6 +98,7 @@ struct Sense {
 
             ImGui::EndTabItem();
         }
+
     }
     
     bool Save() {
@@ -189,7 +197,6 @@ struct Sense {
     void Update() {
         const long HighlightSettingsPointer = Memory::Read<long>(OFF_REGION + OFF_GLOW_HIGHLIGHTS);
         const long HighlightSize = 0x28;
-
         // Item Glow //
         if (ItemGlow) {
             for (int highlightId = 31; highlightId < 35; highlightId++) {
