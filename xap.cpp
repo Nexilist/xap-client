@@ -197,6 +197,11 @@ void RenderUI() {
             ImGui::TextColored(ImVec4(1, 0.2, 0.3, 1), "Changed and overworked by morigan");
             ImGui::EndTabItem();
         }
+        if(ImGui::BeginTabItem("Extras", nullptr, ImGuiTabItemFlags_NoCloseWithMiddleMouseButton | ImGuiTabItemFlags_NoReorder)){
+            
+
+
+        }
         if(ImGui::BeginTabItem("Configs", nullptr, ImGuiTabItemFlags_NoCloseWithMiddleMouseButton | ImGuiTabItemFlags_NoReorder)){
             
             ImGui::Separator();
