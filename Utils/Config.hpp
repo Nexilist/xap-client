@@ -27,11 +27,11 @@ namespace Config {
         bool PredictMovement = true;
         bool PredictBulletDrop = true;
         bool RecoilControl = true;
-        float Speed = 50;
+        float Speed = 60;
         float Smooth = 40;
         float ExtraSmooth = 250;
         float FOV = 15;
-        float ZoomScale = 1.2;
+        float ZoomScale = 1.5;
         float MinDistance = 1;
         float HipfireDistance = 300;
         float ZoomDistance = 300;
