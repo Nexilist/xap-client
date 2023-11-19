@@ -100,16 +100,17 @@ public:
         ImGui_ImplOpenGL3_Init("#version 330 core");
     }
 
-    bool AlignedButton(const char* label, float alignment = 0.5f) {
+    bool AlignedButton(const char* label, float alignment = 0.5f, bool left_aligned = false) {
         ImGuiStyle& style = ImGui::GetStyle();
-
+        
         float size = ImGui::CalcTextSize(label).x + style.FramePadding.x * 2.0f;
         float avail = ImGui::GetContentRegionAvail().x;
 
         float off = (avail - size) * alignment;
-        if (off > 0.0f)
+        if (off > 0.0f){
             ImGui::SetCursorPosX(ImGui::GetCursorPosX() + off);
-
+        }
+        
         return ImGui::Button(label);
     }
 
@@ -168,7 +169,10 @@ public:
     }
 
     void Start(bool(*Update)(), void(*RenderUI)()) {
+        
+        bool renderDone = False;
         while(!glfwWindowShouldClose(OverlayWindow)) {
+            
             StartTime = CurrentEpochMilliseconds();
             glfwPollEvents();
             glViewport(0, 0, ScreenWidth, ScreenHeight);
@@ -197,7 +201,7 @@ public:
             glfwSwapBuffers(OverlayWindow);
 
             ProcessingTime = static_cast<int>(CurrentEpochMilliseconds() - StartTime);
-            SleepTime = 6; // 16.67 > 60hz | 6.97 > 144hz
+            SleepTime = 6.97; // 16.67 > 60hz | 6.97 > 144hz
             TimeLeftToSleep = std::max(0, SleepTime - ProcessingTime);
             std::this_thread::sleep_for(std::chrono::milliseconds(TimeLeftToSleep));
         }

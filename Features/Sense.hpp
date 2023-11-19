@@ -159,11 +159,10 @@ struct Sense {
                 if (headScreenPosition.IsZeroVector())
                     continue;
 
-                Renderer::DrawSeer(Canvas, headScreenPosition.x, headScreenPosition.y - 20, p->Shield, p->MaxShield, p->Health);
+                Renderer::DrawSeer(Canvas, headScreenPosition.x, headScreenPosition.y - 35, p->Shield, p->MaxShield, p->Health);
             }
         }
     }
-
 
     void SetGlowState(long HighlightSettingsPointer, long HighlightSize, int HighlightID, GlowMode NewGlowMode) {
         const GlowMode oldGlowMode = Memory::Read<GlowMode>(HighlightSettingsPointer + (HighlightSize * HighlightID) + 4);

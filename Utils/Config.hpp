@@ -26,27 +26,27 @@ namespace Config {
         bool PredictMovement = true;
         bool PredictBulletDrop = true;
         bool RecoilControl = true;
-        float Speed = 40;
-        float Smooth = 10;
-        float ExtraSmooth = 250;
-        float FOV = 10;
-        float ZoomScale = 1.2;
+        float Speed = 6;
+        float Smooth = 19;
+        float ExtraSmooth = 1144;
+        float FOV = 5;
+        float ZoomScale = 1.4;
         float MinDistance = 1;
-        float HipfireDistance = 200;
+        float HipfireDistance = 27;
         float ZoomDistance = 200;
-        float PitchPower = 1;
-        float YawPower = 1;
+        float PitchPower = 2.32465123;
+        float YawPower = 1.534342324;
     };
 
     namespace Glow {
         bool Enabled = true;
         bool ItemGlow = true;
         bool DrawSeer = true;
-        bool VisibleOnly = true;
-        float MaxDistance = 200;
-        float SeerMaxDistance = 200;
-        bool DrawFOVCircle = true;
-        float GameFOV = 120;
+        bool VisibleOnly = false;
+        float MaxDistance = 500;
+        float SeerMaxDistance = 500;
+        bool DrawFOVCircle = false;
+        float GameFOV = 110;
     };
 
     namespace Triggerbot {

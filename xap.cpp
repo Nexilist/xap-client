@@ -67,10 +67,15 @@ void HandleKeyEvent(Display* display, XEvent* Event) {
 }
 
 void X11EventListener() {
-    Display* display = XOpenDisplay(nullptr);
-    Window root = DefaultRootWindow(display);
-    XGrabKey(display, XKeysymToKeycode(display, XK_Insert), AnyModifier, root, False, GrabModeAsync, GrabModeAsync);
     XEvent event;
+    Display* display = XOpenDisplay(nullptr);
+    unsigned int keycode = XKeysymToKeycode(display, XK_Insert);
+    unsigned int modifiers = ControlMask;
+    Window root = DefaultRootWindow(display);
+    Bool owner_events = False;
+
+    XGrabKey(display, keycode, modifiers, root, owner_events, GrabModeAsync, GrabModeAsync);
+    std::cout << "XGrabKey done\n";
     while (!StopThread) {
         XNextEvent(display, &event);
         HandleKeyEvent(display, &event);
@@ -89,7 +94,7 @@ bool InitializeOverlayWindow() {
     int ScreenHeight;
     OverlayWindow.GetScreenResolution(ScreenWidth, ScreenHeight);
     GameCamera->Initialize(ScreenWidth, ScreenHeight);
-    std::cout << "overlay initialized" << std::endl;
+    std::cout << "1. overlay initialized" << std::endl;
     return true;
 }
 
@@ -132,6 +137,7 @@ void LoadConfig() {
     Trigger->TriggerbotRange = Config::Triggerbot::Range;
 }
 
+
 void SaveConfig() {
     if (!AimAssist->Save()) std::cout << "something went wrong trying to save Aimbot settings" << std::endl;
     if (!ESP->Save()) std::cout << "something went wrong trying to save ESP settings" << std::endl;
@@ -170,9 +176,9 @@ void RenderUI() {
     ImGui::TextColored(ProcessingTimeColor, "Processing Time: %02dms", OverlayWindow.ProcessingTime);
     ImGui::SameLine();
 
-    if (OverlayWindow.AlignedButton("Save Config", 1.0f)) {
-        SaveConfig();
-        std::cout << "config saved" << std::endl;
+    if (OverlayWindow.AlignedButton("Unload chair", 1.0f, false)){
+        OverlayWindow.DestroyOverlay();
+        ImGui::DestroyContext();
     }    
 
     if (ImGui::BeginTabBar("Menus"), ImGuiTabBarFlags_NoCloseWithMiddleMouseButton) {
@@ -188,6 +194,19 @@ void RenderUI() {
             ImGui::TextColored(ImVec4(0.3, 1, 0.64, 1), "Koelion: ImGui Menu, AimbotResolver");
             ImGui::TextColored(ImVec4(0.3, 0.6, 0.9, 1), "unknowncheats: Offsets and ton of other things");
             ImGui::TextColored(ImVec4(0.6, 1, 0.64, 1), "Made by Azreol/Nexilist");
+            ImGui::TextColored(ImVec4(1, 0.2, 0.3, 1), "Changed and overworked by morigan");
+            ImGui::EndTabItem();
+        }
+        if(ImGui::BeginTabItem("Configs", nullptr, ImGuiTabItemFlags_NoCloseWithMiddleMouseButton | ImGuiTabItemFlags_NoReorder)){
+            
+            ImGui::Separator();
+            if (OverlayWindow.AlignedButton("Load Config", 0.0f, true)){
+                LoadConfig();
+            }
+            if (OverlayWindow.AlignedButton("Save Config", 0.0f, true)) {
+                SaveConfig();
+                std::cout << "config saved" << std::endl;
+            }
             ImGui::EndTabItem();
         }
 
@@ -229,7 +248,6 @@ bool UpdateCore() {
                     Players->push_back(p);
             }
         }
-
         // Updates //
         GameCamera->Update();
         ESP->Update();
@@ -238,7 +256,7 @@ bool UpdateCore() {
 
         return true;
     } catch(const std::exception& ex) {
-        std::cout << "Error: " << ex.what() << std::endl;
+        std::cout << "Error: " << ex.what() << std::endl << "UpdateCore function";
         return true;
     }
 
@@ -266,26 +284,33 @@ int main(int argc, char *argv[]) {
     if (!InitializeOverlayWindow()) return -1;
 
     // Theading //
+
+    //start first thread and detach it to run on its own
     std::thread X11Thread(X11EventListener);
     X11Thread.detach();
+    //start second thread and detach it to run on its own
     std::thread InputManagerThread(InputManager::run);
     InputManagerThread.detach();
 
     // Initialize the whole process //
     try {
-        for (int i = 0; i < 70; i++) 
+        for (int i = 0; i < 70; i++){
             HumanPlayers->push_back(new Player(i, Myself));
-
-        for (int i = 0; i < 15000; i++) 
+        }
+        for (int i = 0; i < 15000; i++){
             Dummies->push_back(new Player(i, Myself));
+        }
 
+        std::cout << "3. Esp Initialization      (line. 247)\n";
         ESP->Initialize();
+        std::cout << "4. Esp Initialization DONE (line. 248)\n";
         
         std::cout << "core initialized" << std::endl;
         std::cout << "-----------------------------" << std::endl;
-
-        LoadConfig();
+        
         // This is where the fun starts //
+        LoadConfig();
+        std::cout << "5. OverlayWindow.Start\n";
         OverlayWindow.Start(&UpdateCore, &RenderUI);
     }
     catch(...) {}

@@ -32,18 +32,18 @@ struct Aimbot {
 
     float FinalDistance = 0;
 
-    float Speed = 40;
-    float Smooth = 10;
-    float ExtraSmooth = 250;
-    float FOV = 10;
-    float ZoomScale = 1.2;
+    float Speed = 4;
+    float Smooth = 18;
+    float ExtraSmooth = 1250;
+    float FOV = 5;
+    float ZoomScale = 1.3;
     float MinDistance = 1;
-    float HipfireDistance = 60;
-    float ZoomDistance = 160;
+    float HipfireDistance = 20;
+    float ZoomDistance = 250;
 
     bool RecoilEnabled = true;
-    float PitchPower = 3;
-    float YawPower = 3;
+    float PitchPower = 1.4352;
+    float YawPower = 2.4212;
 
     XDisplay* X11Display;
     LocalPlayer* Myself;
@@ -70,10 +70,10 @@ struct Aimbot {
             ImGui::Checkbox("Recoil Control", &RecoilEnabled);
             if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
                 ImGui::SetTooltip("Reduce the intensity of weapon's recoil.");
-            ImGui::SliderFloat("Pitch", &PitchPower, 1, 10, "%.1f");
+            ImGui::SliderFloat("Pitch", &PitchPower, 1.0f, 3.0f, "%.3f", 1.0f / 1000.0f);
             if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
-                ImGui::SetTooltip("Pitch Power");
-            ImGui::SliderFloat("Yaw", &YawPower, 1, 10, "%.1f");
+            ImGui::SetTooltip("Pitch Power");
+                ImGui::SliderFloat("Yaw", &YawPower, 1.0f, 3.0f, "%.3f", 1.0f / 1000.0f);
             if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
                 ImGui::SetTooltip("Yaw Power");
 
@@ -322,7 +322,7 @@ struct Aimbot {
 
     int GetBestBone(Player* Target) {
         float NearestDistance = 999;
-        int NearestBone = 2;
+        int NearestBone = rand() % 5 + 0;
         for (int i = 0; i < 6; i++) {
             HitboxType Bone = static_cast<HitboxType>(i);
             double DistanceFromCrosshair = CalculateDistanceFromCrosshair(Target->GetBonePosition(Bone));
