@@ -26,7 +26,7 @@ constexpr long OFF_BONES = 0x0dd0 + 0x48;                     //m_nForceBone
 constexpr long OFF_LOCAL_ORIGIN = 0x017c;                     //[DataMap.C_BaseEntity]->m_localOrigin
 constexpr long OFF_ABSVELOCITY = 0x0170;                      //[DataMap.C_BaseEntity]->m_vecAbsVelocity
 
-constexpr long OFF_ZOOMING = 0x1b91;                          //[RecvTable.DT_Player]->m_bZooming
+constexpr long OFF_ZOOMING = 0x1c01;                          //[RecvTable.DT_Player]->m_bZooming
 constexpr long OFF_TEAM_NUMBER = 0x037c;                      //[RecvTable.DT_BaseEntity]->m_iTeamNum
 constexpr long OFF_NAME = 0x04b9;                             //[RecvTable.DT_BaseEntity]->m_iName
 constexpr long OFF_SIGNIFIER_NAME = 0x04b0;                   //[RecvTable.DT_BaseEntity]->m_iSignifierName
@@ -44,8 +44,8 @@ constexpr long OFF_PROJECTILESCALE = 0x1ea4;                  //projectile_gravi
 constexpr long OFF_PROJECTILESPEED = 0x1e9c;                  //projectile_launch_speed + BASE
 
 // Glow
-constexpr long OFF_GLOW_ENABLE = 0x294;                       //[DT_HighlightSettings].?
+constexpr long OFF_GLOW_ENABLE = 0x294;                        //[DT_HighlightSettings].?
 constexpr long OFF_GLOW_THROUGH_WALL = 0x278;                 //[DT_HighlightSettings].?
 constexpr long OFF_GLOW_FIX = 0x270;
-constexpr long OFF_GLOW_HIGHLIGHT_ID = 0x298;                 //[DT_HighlightSettings].m_highlightServerActiveStates    
-constexpr long OFF_GLOW_HIGHLIGHTS = 0xB5F7620;               //[?]->?
+constexpr long OFF_GLOW_HIGHLIGHT_ID = 0x0298;                 //[DT_HighlightSettings].m_highlightServerActiveStates    
+constexpr long OFF_GLOW_HIGHLIGHTS = 0xb5cc530;               //[?]->?HighlightSettings
