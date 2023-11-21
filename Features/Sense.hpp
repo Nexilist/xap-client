@@ -88,7 +88,6 @@ struct Sense {
             ImGui::SliderFloat("Game's FOV", &GameFOV, 70, 120, "%.0f");
             if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
                 ImGui::SetTooltip("Your current FOV in Settings");
-
             ImGui::EndTabItem();
         }
     }

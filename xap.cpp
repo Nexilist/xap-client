@@ -26,6 +26,7 @@
 #include "Utils/Config.hpp"
 #include "Utils/Memory.hpp"
 #include "Utils/XDisplay.hpp"
+#include "Extra.hpp"
 
 // Objects
 XDisplay* X11Display = new XDisplay();
@@ -144,7 +145,7 @@ void SaveConfig() {
     if (!Trigger->Save()) std::cout << "something went wrong trying to save Triggerbot settings" << std::endl;
     UpdateConfig();
 }
-
+bool skin_state = false;
 // Interface
 ImVec4 ProcessingTimeColor;
 void RenderUI() {
@@ -198,10 +199,13 @@ void RenderUI() {
             ImGui::EndTabItem();
         }
         if(ImGui::BeginTabItem("Extras", nullptr, ImGuiTabItemFlags_NoCloseWithMiddleMouseButton | ImGuiTabItemFlags_NoReorder)){
-            
-
-
+            ImGui::Checkbox("Skinchanger", &skin_state);
+            if (skin_state == True){
+                SkinChange();
+            }
+            ImGui::EndTabItem();
         }
+
         if(ImGui::BeginTabItem("Configs", nullptr, ImGuiTabItemFlags_NoCloseWithMiddleMouseButton | ImGuiTabItemFlags_NoReorder)){
             
             ImGui::Separator();

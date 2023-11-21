@@ -1,16 +1,26 @@
 #pragma once
 #include "../Core/Offsets.hpp"
 #include "Memory.hpp"
+#include "../Core/LocalPlayer.hpp"
+    
+    long BasePointer = Memory::Read<long>(OFF_REGION + OFF_LOCAL_PLAYER);
 
+    bool IsDead = (Memory::Read<short>(BasePointer + OFF_LIFE_STATE) > 0);
+    bool IsInAttack;
+
+    long weaponHandle = Memory::Read<long>(BasePointer + OFF_WEAPON_HANDLE);
+    long weaponHandleMasked = weaponHandle & 0xffff;
 
 void SkinChange()
     {
-        if(!m_level->playable) return;
-        if(m_localPlayer->dead) return;
-        long wephandle = Memory::Read<long>(m_localPlayer->base + OFF_WEAPON_HANDLE);
+        
+        if(IsDead) return;
+        long wephandle = Memory::Read<long>(BasePointer + OFF_WEAPON_HANDLE);
         wephandle &= 0xffff;
-        long wep_entity = m_localPlayer->weaponEntity;
-        float curTime = Memory::Read<float>(m_localPlayer->base + OFFSET_TIME_BASE);
+
+        //----------------------------------------------------------------------------------------------------------------------------
+        long wep_entity = Memory::Read<long>(OFF_REGION + OFF_ENTITY_LIST + (weaponHandleMasked << 5));;
+        float curTime = Memory::Read<float>(BasePointer + OFFSET_TIME_BASE);
         float endTime = curTime +5.5;
         std::map<int, std::vector<int>> weaponSkinMap;
         //Light ammo weapons
@@ -56,7 +66,7 @@ void SkinChange()
             if (weaponSkinMap.count(waponIndex) == 0) return;
             int skinID = weaponSkinMap[waponIndex][0];
             //printf("Weapon: %s Activated Skin ID: %d \n", WeaponName(waponIndex).c_str(), skinID);  
-            Memory::Write<int>(m_localPlayer->base + OFF_SKIN, skinID+1);
+            Memory::Write<int>(BasePointer + OFF_SKIN, skinID+1);
             Memory::Write<int>(wep_entity + OFF_SKIN, skinID);
-            curTime = Memory::Read<float>(m_localPlayer->base + OFFSET_TIME_BASE);                 
+            curTime = Memory::Read<float>(BasePointer + OFFSET_TIME_BASE);                 
     };
