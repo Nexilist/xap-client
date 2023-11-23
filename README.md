@@ -4,17 +4,6 @@ I'll will be very grateful if you do so.
 
 **Disclaimer: This code is for educational purposes only .**
 
-# Updates
-- FOV Circle (You'll have to manually set the Game FOV in ESP section, cl_fovScale broke so idk how to get game's FOV automatically)
-- FOV now scales with Scopes's zoom
-- Fixed Sense
-- Fixed Aimbot Prediction
-- RCS
-- Offsets fixes
-- Bone Selection is now replaced with auto select best bone
-- Removed Allow Target Switch because it somehow causes xap-client to crash
-- Aim-Assist will no longer be activated while holding grenade
-
 # Credits
 arturzxc: for the features (ESP, Triggerbot, Aimbot) and X11Display's XTestFakeRelativeMotionEvent
 
