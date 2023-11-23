@@ -2,6 +2,7 @@
 #include <iostream>
 #include <vector>
 #include "../Core/Player.hpp"
+#include "../Core/LocalPlayer.hpp"
 #include "../Core/Offsets.hpp"
 #include "../Core/GlowMode.hpp"
 #include "../Core/Camera.hpp"
@@ -36,21 +37,29 @@ struct Sense {
 
     // Health and Armor, etc...
     bool DrawSeer = true;
-    bool VisibleOnly = true;
-    float SeerMaxDistance = 200;
-
-    bool DrawTracers = true; // Unused
-    bool DrawDistance = true; // Unused
-
+    bool DrawTracers = true;
+    bool DrawDistance = true;
     bool DrawFOVCircle = true;
+    
+    bool AimedAtOnly = false;
+
+    float SeerMaxDistance = 200;
     float GameFOV = 120;
 
-    std::vector<Player*>* Players;
+    bool ShowSpectators = true;
+    
+    // Variables
     Camera* GameCamera;
+    LocalPlayer* Myself;
+    std::vector<Player*>* Players;
+    std::chrono::milliseconds LastUpdateTime;
+    int TotalSpectators = 0;
+    std::vector<std::string> Spectators;
 
-    Sense(std::vector<Player*>* Players, Camera* GameCamera) {
+    Sense(std::vector<Player*>* Players, Camera* GameCamera, LocalPlayer* Myself) {
         this->Players = Players;
         this->GameCamera = GameCamera;
+        this->Myself = Myself;
     }
 
     void RenderUI() {
@@ -70,12 +79,20 @@ struct Sense {
             ImGui::Separator();
 
             // Drawings
+            ImGui::Checkbox("Draw Tracer##ESP", &DrawTracers);
+            if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
+                ImGui::SetTooltip("Draw lines to enemies");
+            ImGui::SameLine();
+            ImGui::Checkbox("Draw Distance##ESP", &DrawDistance);
+            if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
+                ImGui::SetTooltip("Show how far the enemy is");
+            ImGui::Separator();
             ImGui::Checkbox("Draw Health and Armor##ESP", &DrawSeer);
             if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
                 ImGui::SetTooltip("Draw Health Bar and Armor");
-            ImGui::Checkbox("Visible Only##ESP", &VisibleOnly);
+            ImGui::Checkbox("Aimed At Only##ESP", &AimedAtOnly);
             if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
-                ImGui::SetTooltip("Only draw those who are visible");
+                ImGui::SetTooltip("Only draw those who are locked on by Aim-Assist");
             ImGui::SliderFloat("Draw Distance", &SeerMaxDistance, 0, 1000, "%.0f");
             if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
                 ImGui::SetTooltip("Only draw those in range.");
@@ -89,20 +106,27 @@ struct Sense {
             if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
                 ImGui::SetTooltip("Your current FOV in Settings");
 
+            ImGui::Separator();
+
+            ImGui::Checkbox("Show Spectators", &ShowSpectators);
+            if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
+                ImGui::SetTooltip("Show spectators");
+
             ImGui::EndTabItem();
         }
     }
     
     bool Save() {
         try {
-            Config::Glow::Enabled = GlowEnabled;
-            Config::Glow::ItemGlow = ItemGlow;
-            Config::Glow::MaxDistance = GlowMaxDistance;
-            Config::Glow::DrawSeer = DrawSeer;
-            Config::Glow::SeerMaxDistance = SeerMaxDistance;
-            Config::Glow::VisibleOnly = VisibleOnly;
-            Config::Glow::DrawFOVCircle = DrawFOVCircle;
-            Config::Glow::GameFOV = GameFOV;
+            Config::Sense::Enabled = GlowEnabled;
+            Config::Sense::ItemGlow = ItemGlow;
+            Config::Sense::MaxDistance = GlowMaxDistance;
+            Config::Sense::DrawSeer = DrawSeer;
+            Config::Sense::SeerMaxDistance = SeerMaxDistance;
+            Config::Sense::AimedAtOnly = AimedAtOnly;
+            Config::Sense::ShowSpectators = ShowSpectators;
+            Config::Sense::DrawFOVCircle = DrawFOVCircle;
+            Config::Sense::GameFOV = GameFOV;
             return true;
         } catch (...) {
             return false;
@@ -127,14 +151,90 @@ struct Sense {
     }
 
     void RenderDrawings(ImDrawList* Canvas, Aimbot* AimAssistState, LocalPlayer* Myself, Overlay OverlayWindow) {
-        if (!Myself->IsCombatReady()) return;
-        if (DrawFOVCircle) {
-            int ScreenWidth;
-            int ScreenHeight;
+        int ScreenWidth;
+        int ScreenHeight;
+        OverlayWindow.GetScreenResolution(ScreenWidth, ScreenHeight);
+
+        if (ShowSpectators) {
+            ImVec2 Center = ImGui::GetMainViewport()->GetCenter();
+            ImGui::SetNextWindowPos(ImVec2(0.0f, Center.y), ImGuiCond_Once, ImVec2(0.02f, 0.5f));
+            ImGui::SetNextWindowBgAlpha(0.3f);
+            ImGui::Begin("Spectators", nullptr, ImGuiWindowFlags_AlwaysAutoResize | 
+                ImGuiWindowFlags_NoTitleBar |
+                ImGuiWindowFlags_NoSavedSettings | 
+                ImGuiWindowFlags_NoMove | 
+                ImGuiWindowFlags_NoInputs | 
+                ImGuiWindowFlags_NoCollapse |
+                ImGuiWindowFlags_NoScrollbar);
+
+            std::chrono::milliseconds Now = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch());
+            if (Now >= LastUpdateTime + std::chrono::milliseconds(1500)) {
+                int TempTotalSpectators = 0;
+                std::vector<std::string> TempSpectators;
+
+                for (int i = 0; i < Players->size(); i++) {
+                    Player* p = Players->at(i);
+                    if (p->BasePointer == Myself->BasePointer) continue;
+                    if (p->GetViewYaw() == Myself->ViewYaw && p->IsDead) {
+                        TempTotalSpectators++;
+                        TempSpectators.push_back(p->GetPlayerName());
+                    }
+                }
+
+                TotalSpectators = TempTotalSpectators;
+                Spectators = TempSpectators;
+                LastUpdateTime = Now;
+            }
+            ImGui::Text("Spectators: ");
+            ImGui::SameLine(); ImGui::TextColored(TotalSpectators > 0 ? ImVec4(1, 0.343, 0.475, 1) : ImVec4(0.4, 1, 0.343, 1), "%d", TotalSpectators);
+            if (static_cast<int>(Spectators.size()) > 0) {
+                ImGui::Separator();
+                for (int i = 0; i < static_cast<int>(Spectators.size()); i++) {
+                    ImGui::TextColored(ImVec4(1, 0.343, 0.475, 1), "> %s", Spectators.at(i).c_str());
+                }
+            }
+            ImGui::End();
+        }
+
+        // Draw FOV Circle
+        if (DrawFOVCircle && Myself->IsCombatReady()) {
             float FOV = std::min(AimAssistState->FOV, AimAssistState->FOV * (AimAssistState->GetFOVScale() * AimAssistState->ZoomScale));
-            OverlayWindow.GetScreenResolution(ScreenWidth, ScreenHeight);
             float Radius = tanf(DEG2RAD(FOV) / 2) / tanf(DEG2RAD(GameFOV) / 2) * ScreenWidth;
-            Renderer::DrawCircle(Canvas, Vector2D(ScreenWidth / 2, ScreenHeight / 2), Radius, 20, ImColor(255, 255, 255), 2);
+            Renderer::DrawCircle(Canvas, Vector2D(ScreenWidth / 2, ScreenHeight / 2), Radius, 40, ImColor(255, 255, 255), 2);
+        }
+
+        // Draw lot of things
+        for (int i = 0; i < Players->size(); i++) {
+            Player* p = Players->at(i);
+            if (!p->IsCombatReady() || !p->IsVisible || !p->IsHostile || p->DistanceToLocalPlayer > (Conversion::ToGameUnits(SeerMaxDistance)) || Myself->BasePointer == p->BasePointer) continue;
+
+            // Tracer
+            if (DrawTracers) {
+                Vector2D chestScreenPosition;
+                GameCamera->WorldToScreen(p->GetBonePosition(HitboxType::UpperChest), chestScreenPosition);
+                if (!chestScreenPosition.IsZeroVector()) {
+                    int x = (int)(ScreenWidth * 0.5f);
+                    Renderer::DrawLine(Canvas, Vector2D(x, ScreenHeight), chestScreenPosition, 1.5f, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
+                    Renderer::DrawCircleFilled(Canvas, chestScreenPosition, 2, 10, ImColor(255, 255, 255));
+                }
+            }
+
+            // Distance
+            if (DrawDistance) {
+                Vector2D originScreenPosition;
+                GameCamera->WorldToScreen(p->LocalOrigin.Add(Vector3D(0, 15, 0)), originScreenPosition);
+                if (!originScreenPosition.IsZeroVector()) {
+                    Renderer::DrawText(Canvas, originScreenPosition.Add(Vector2D(5, 0)), std::to_string((int)Conversion::ToMeters(p->DistanceToLocalPlayer)).c_str(), ImVec4(1.0f, 1.0f, 1.0f, 1.0f), true, true, false);
+                }
+            }
+
+            // Seer
+            if (DrawSeer && !AimedAtOnly) {
+                Vector2D headScreenPosition;
+                GameCamera->WorldToScreen(p->GetBonePosition(HitboxType::Head), headScreenPosition);
+                if (!headScreenPosition.IsZeroVector())
+                    Renderer::DrawSeer(Canvas, headScreenPosition.x, headScreenPosition.y - 20, p->Shield, p->MaxShield, p->Health);
+            }
         }
 
         // Draw Seer on locked target
@@ -147,23 +247,7 @@ struct Sense {
             Renderer::DrawSeer(Canvas, headScreenPosition.x, headScreenPosition.y - 20, AimAssistState->CurrentTarget->Shield, AimAssistState->CurrentTarget->MaxShield, AimAssistState->CurrentTarget->Health);
             return;
         }
-
-        // Draw Seer on everyone
-        for (int i = 0; i < Players->size(); i++) {
-            Player* p = Players->at(i);
-            if (!p->IsCombatReady() || !p->IsVisible || !p->IsHostile || p->DistanceToLocalPlayer > (Conversion::ToGameUnits(SeerMaxDistance)) || Myself->BasePointer == p->BasePointer) continue;
-
-            if (DrawSeer) {
-                Vector2D headScreenPosition;
-                GameCamera->WorldToScreen(p->GetBonePosition(HitboxType::Head), headScreenPosition);
-                if (headScreenPosition.IsZeroVector())
-                    continue;
-
-                Renderer::DrawSeer(Canvas, headScreenPosition.x, headScreenPosition.y - 20, p->Shield, p->MaxShield, p->Health);
-            }
-        }
     }
-
 
     void SetGlowState(long HighlightSettingsPointer, long HighlightSize, int HighlightID, GlowMode NewGlowMode) {
         const GlowMode oldGlowMode = Memory::Read<GlowMode>(HighlightSettingsPointer + (HighlightSize * HighlightID) + 4);

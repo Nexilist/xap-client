@@ -85,83 +85,6 @@ namespace Memory {
         return false;
     }
 
-    std::string ReadString(long address) {
-        int size = sizeof(std::string);
-        char buffer[size] = {0};
-        bool success = Read(address, &buffer, size);
-        if (!success)
-            throw new std::invalid_argument("Failed to read string at address: " + address);
-        return std::string(buffer);
-    }
-
-    short ReadShort(long address) {
-        int size = sizeof(short);
-        short buffer;
-        bool success = Read(address, &buffer, size);
-        if (!success)
-            throw new std::invalid_argument("Failed to read short at address: " + address);
-        return buffer;
-    }
-
-    void WriteShort(long address, short num) {
-        int size = sizeof(short);
-        short buffer = num;
-        bool success = Write(address, &buffer, size);
-        if (!success)
-            throw new std::invalid_argument("Failed to write short at address: " + address);
-    }
-
-    int ReadInt(long address) {
-        int size = sizeof(int);
-        int buffer;
-        bool success = Read(address, &buffer, size);
-        if (!success)
-            throw new std::invalid_argument("Failed to read int at address: " + address);
-        return buffer;
-    }
-
-    void WriteInt(long address, int num) {
-        int size = sizeof(int);
-        int buffer = num;
-        bool success = Write(address, &buffer, size);
-        if (!success)
-            throw new std::invalid_argument("Failed to write int at address: " + address);
-    }
-
-    float ReadFloat(long address) {
-        int size = sizeof(float);
-        float buffer;
-        bool success = Read(address, &buffer, size);
-        if (!success)
-            throw new std::invalid_argument("Failed to read float at address: " + address);
-        return buffer;
-    }
-
-    void WriteFloat(long address, float num) {
-        int size = sizeof(float);
-        float buffer = num;
-        bool success = Write(address, &buffer, size);
-        if (!success)
-            throw new std::invalid_argument("Failed to write float at address: " + address);
-    }
-
-    long ReadLong(long address) {
-        int size = sizeof(long);
-        long buffer;
-        bool success = Read(address, &buffer, size);
-        if (!success)
-            throw new std::invalid_argument("Failed to read long at address: " + address);
-        return buffer;
-    }
-
-    void WriteLong(long address, long num) {
-        int size = sizeof(long);
-        long buffer = num;
-        bool success = Write(address, &buffer, size);
-        if (!success)
-            throw new std::invalid_argument("Failed to write long at address: " + address);
-    }
-
     template <class T>
     T Read(long Address) {
         T buffer;
@@ -183,6 +106,23 @@ namespace Memory {
             throw std::invalid_argument(
                 "Failed to set " + std::to_string(sizeof(T)) + " at: " + std::to_string(Address));
         }
+    }
+
+    std::string ReadString(long address) {
+        int size = sizeof(std::string);
+        char buffer[size] = {0};
+        bool success = Read(address, &buffer, size);
+        if (!success)
+            throw new std::invalid_argument("Failed to read string at address: " + address);
+        return std::string(buffer);
+    }
+
+    std::string ReadPlayerName(long address, int size) {
+        char buffer[size] = { 0 };
+        bool success = Read(address, &buffer, size);
+        if (!success)
+            throw new std::invalid_argument("Failed to read Player Name at address: " + address);
+        return std::string(buffer);
     }
 
     std::string ConvertPointerToHexString(long pointer) {

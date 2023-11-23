@@ -27,6 +27,8 @@ struct LocalPlayer {
     float ZoomFOV;
     float TargetZoomFOV;
 
+    float ViewYaw;
+
     void ResetPointer() {
         BasePointer = 0;
     }
@@ -45,6 +47,8 @@ struct LocalPlayer {
         CameraPosition = Memory::Read<Vector3D>(BasePointer + OFF_CAMERAORIGIN);
         ViewAngles = Memory::Read<Vector2D>(BasePointer + OFF_VIEW_ANGLES);
         PunchAngles = Memory::Read<Vector2D>(BasePointer + OFF_PUNCH_ANGLES);
+
+        ViewYaw = Memory::Read<float>(BasePointer + OFF_YAW);
 
         if (!IsDead && !IsKnocked) {
             long WeaponHandle = Memory::Read<long>(BasePointer + OFF_WEAPON_HANDLE);

@@ -8,12 +8,29 @@
 
 class Renderer {
 public:
-    static void DrawText(ImDrawList* canvas, const Vector2D& pos, const char* text, const ImVec4& color) {
-		canvas->AddText(ImVec2(pos.x, pos.y), ImColor(color), text);
+    static void DrawText(ImDrawList* canvas, const Vector2D& pos, const char* text, ImColor color, bool outline, bool centered, bool adjustHeight) {
+		const auto textColor = color;
+        const auto outlineColor = ImColor(0, 0, 0);
+
+        const auto textSize = ImGui::CalcTextSize(text);
+        const auto horizontalOffset = centered ? textSize.x / 2 : 0.0f;
+        const auto verticalOffset = adjustHeight ? textSize.y : 0.0f;
+
+        if (outline) {
+            canvas->AddText({pos.x - horizontalOffset, pos.y - verticalOffset - 1}, outlineColor, text);
+            canvas->AddText({pos.x - horizontalOffset, pos.y - verticalOffset + 1}, outlineColor, text);
+            canvas->AddText({pos.x - horizontalOffset - 1, pos.y - verticalOffset}, outlineColor, text);
+            canvas->AddText({pos.x - horizontalOffset + 1, pos.y - verticalOffset}, outlineColor, text);
+        }
+        canvas->AddText({pos.x - horizontalOffset, pos.y - verticalOffset}, textColor, text);
 	}
 
     static void DrawCircle(ImDrawList* canvas, const Vector2D& pos, float radius, int segments, const ImColor& color, float thickness) {
 		canvas->AddCircle(ImVec2(pos.x, pos.y), radius, color, segments, thickness);
+	}
+
+    static void DrawCircleFilled(ImDrawList* canvas, const Vector2D& pos, float radius, int segments, const ImColor& color) {
+		canvas->AddCircleFilled(ImVec2(pos.x, pos.y), radius, color, segments);
 	}
 
     static void DrawLine(ImDrawList* canvas, const Vector2D& start, const Vector2D& end, float thickness, const ImVec4& color) {

@@ -43,7 +43,7 @@ std::vector<Player*>* Dummies = new std::vector<Player*>;
 std::vector<Player*>* Players = new std::vector<Player*>;
 
 // Features
-Sense* ESP = new Sense(Players, GameCamera);
+Sense* ESP = new Sense(Players, GameCamera, Myself);
 Aimbot* AimAssist = new Aimbot(X11Display, Myself, Players);
 Triggerbot* Trigger = new Triggerbot(X11Display, Myself, Players);
 
@@ -107,7 +107,6 @@ void LoadConfig() {
     AimAssist->PredictBulletDrop = Config::Aimbot::PredictBulletDrop;
     AimAssist->Speed = Config::Aimbot::Speed;
     AimAssist->Smooth = Config::Aimbot::Smooth;
-    AimAssist->ExtraSmooth = Config::Aimbot::ExtraSmooth;
     AimAssist->FOV = Config::Aimbot::FOV;
     AimAssist->ZoomScale = Config::Aimbot::ZoomScale;
     AimAssist->MinDistance = Config::Aimbot::MinDistance;
@@ -118,14 +117,15 @@ void LoadConfig() {
     AimAssist->YawPower = Config::Aimbot::YawPower;
 
     // ESP //
-    ESP->GlowEnabled = Config::Glow::Enabled;
-    ESP->ItemGlow = Config::Glow::ItemGlow;
-    ESP->GlowMaxDistance = Config::Glow::MaxDistance;
-    ESP->DrawSeer = Config::Glow::DrawSeer;
-    ESP->SeerMaxDistance = Config::Glow::SeerMaxDistance;
-    ESP->VisibleOnly = Config::Glow::VisibleOnly;
-    ESP->DrawFOVCircle = Config::Glow::DrawFOVCircle;
-    ESP->GameFOV = Config::Glow::GameFOV;
+    ESP->GlowEnabled = Config::Sense::Enabled;
+    ESP->ItemGlow = Config::Sense::ItemGlow;
+    ESP->GlowMaxDistance = Config::Sense::MaxDistance;
+    ESP->DrawSeer = Config::Sense::DrawSeer;
+    ESP->SeerMaxDistance = Config::Sense::SeerMaxDistance;
+    ESP->AimedAtOnly = Config::Sense::AimedAtOnly;
+    ESP->ShowSpectators = Config::Sense::ShowSpectators;
+    ESP->DrawFOVCircle = Config::Sense::DrawFOVCircle;
+    ESP->GameFOV = Config::Sense::GameFOV;
 
     // Triggerbot //
     Trigger->TriggerbotEnabled = Config::Triggerbot::Enabled;
@@ -164,7 +164,7 @@ void RenderUI() {
     // Menu
     ImGui::SetNextWindowSizeConstraints(ImVec2(440, 420), ImVec2(440, 420));
     ImGui::SetNextWindowSize(ImVec2(440, 420), ImGuiCond_FirstUseEver);
-    ImGui::Begin(" ", nullptr, ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar);
+    ImGui::Begin("xap-client", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar);
     
     ProcessingTimeColor = OverlayWindow.ProcessingTime > 20 ? ProcessingTimeColor = ImVec4(1, 0.343, 0.475, 1) : ProcessingTimeColor = ImVec4(0.4, 1, 0.343, 1);
     ImGui::TextColored(ProcessingTimeColor, "Processing Time: %02dms", OverlayWindow.ProcessingTime);
@@ -208,7 +208,7 @@ bool UpdateCore() {
 
         // Read Local Player //
         Myself->Read();
-        if (!Myself->IsCombatReady()) {
+        if (!Myself->IsValid()) {
             return true;
         }
 
@@ -218,14 +218,14 @@ bool UpdateCore() {
             for (int i = 0; i < Dummies->size(); i++) {
                 Player* p = Dummies->at(i);
                 p->Read();
-                if (p->IsValid())
+                if (p->BasePointer != 0 && (p->IsPlayer() || p->IsDummy()))
                     Players->push_back(p);
             }
         } else {
             for (int i = 0; i < HumanPlayers->size(); i++) {
                 Player* p = HumanPlayers->at(i);
                 p->Read();
-                if (p->IsValid())
+                if (p->BasePointer != 0 && (p->IsPlayer() || p->IsDummy()))
                     Players->push_back(p);
             }
         }
@@ -238,6 +238,7 @@ bool UpdateCore() {
 
         return true;
     } catch(const std::exception& ex) {
+        std::system("clear");
         std::cout << "Error: " << ex.what() << std::endl;
         return true;
     }
