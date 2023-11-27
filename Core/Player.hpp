@@ -69,7 +69,9 @@ struct Player {
         AbsoluteVelocity = Memory::Read<Vector3D>(BasePointer + OFF_ABSVELOCITY);
 
         GlowEnable = Memory::Read<int>(BasePointer + OFF_GLOW_ENABLE);
+        std::cout << GlowEnable << std::endl;
         GlowThroughWall = Memory::Read<int>(BasePointer + OFF_GLOW_THROUGH_WALL);
+        std::cout << GlowThroughWall << std::endl;
         HighlightID = Memory::Read<int>(BasePointer + OFF_GLOW_HIGHLIGHT_ID + 1);
 
         LastTimeAimedAt = Memory::Read<int>(BasePointer + OFF_LAST_AIMEDAT_TIME);

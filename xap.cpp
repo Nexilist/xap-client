@@ -26,7 +26,7 @@
 #include "Utils/Config.hpp"
 #include "Utils/Memory.hpp"
 #include "Utils/XDisplay.hpp"
-#include "Extra.hpp"
+//#include "Extra.hpp"
 
 // Objects
 XDisplay* X11Display = new XDisplay();
@@ -198,13 +198,13 @@ void RenderUI() {
             ImGui::TextColored(ImVec4(1, 0.2, 0.3, 1), "Changed and overworked by morigan");
             ImGui::EndTabItem();
         }
-        if(ImGui::BeginTabItem("Extras", nullptr, ImGuiTabItemFlags_NoCloseWithMiddleMouseButton | ImGuiTabItemFlags_NoReorder)){
-            ImGui::Checkbox("Skinchanger", &skin_state);
-            if (skin_state == True){
-                SkinChange();
-            }
-            ImGui::EndTabItem();
-        }
+        //if(ImGui::BeginTabItem("Extras", nullptr, ImGuiTabItemFlags_NoCloseWithMiddleMouseButton | ImGuiTabItemFlags_NoReorder)){
+        //    ImGui::Checkbox("Skinchanger", &skin_state);
+        //    if (skin_state == True){
+        //        SkinChange();
+        //    }
+        //    ImGui::EndTabItem();
+        //}
 
         if(ImGui::BeginTabItem("Configs", nullptr, ImGuiTabItemFlags_NoCloseWithMiddleMouseButton | ImGuiTabItemFlags_NoReorder)){
             
