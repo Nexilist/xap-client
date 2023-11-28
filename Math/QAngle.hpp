@@ -83,7 +83,7 @@ struct QAngle {
         return *this;
     }
 
-    inline QAngle& clamp(float minVal, float maxVal) {
+    inline QAngle& Clamp(float minVal, float maxVal) {
         x = std::clamp(x, minVal, maxVal);
         y = std::clamp(y, minVal, maxVal);
 
@@ -94,7 +94,7 @@ struct QAngle {
         return (*this) * (1.0f - t) + other * t;
     }
 
-    inline QAngle& fixAngle() {
+    inline QAngle& NormalizeAngles() {
         if(!isValid()) {
             return *this;
         }

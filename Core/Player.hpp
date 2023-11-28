@@ -47,6 +47,8 @@ struct Player {
     float DistanceToLocalPlayer;
     float Distance2DToLocalPlayer;
 
+    float ViewYaw;
+
     bool IsLockedOn;
 
     Player(int PlayerIndex, LocalPlayer* Me) {
@@ -95,7 +97,21 @@ struct Player {
             Distance2DToLocalPlayer = Myself->LocalOrigin.To2D().Distance(LocalOrigin.To2D());
         }
     }
+
+    std::string GetPlayerName(){
+        uintptr_t NameIndex = Memory::Read<uintptr_t>(BasePointer + OFF_NAME_INDEX);
+        uintptr_t NameOffset = Memory::Read<uintptr_t>(OFF_REGION + OFF_NAME_LIST + ((NameIndex - 1) << 4 ));
+        std::string PlayerName = Memory::ReadPlayerName(NameOffset, 64);
+        return PlayerName;
+    }
     
+    float GetViewYaw() {
+        if (!IsDummy() || IsPlayer()) {
+            return Memory::Read<float>(BasePointer + OFF_YAW);
+        }
+        return 0.0f;
+    }
+
     bool IsValid() {
         return BasePointer != 0 && Health > 0 && (IsPlayer() || IsDummy());
     }

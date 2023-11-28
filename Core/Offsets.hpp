@@ -6,6 +6,9 @@ constexpr long OFF_LEVEL = 0x16966f0;                         //[Miscellaneous]-
 constexpr long OFF_LOCAL_PLAYER = 0x211fac8;                  //[Miscellaneous]->LocalPlayer
 constexpr long OFF_ENTITY_LIST = 0x1d71858;                   //[Miscellaneous]->cl_entitylist
 
+constexpr long OFF_NAME_LIST = 0xc275bf0;                     //[Miscellaneous]->NameList
+constexpr long OFF_NAME_INDEX = 0x38;                         //nameIndex
+
 // HUD
 constexpr long OFF_VIEWRENDER = 0x7389d40;                    //[Miscellaneous]->ViewRenderer
 constexpr long OFF_VIEWMATRIX = 0x11a350;                     //[Miscellaneous]->ViewMatrix
@@ -18,6 +21,7 @@ constexpr long OFF_MAXSHIELD = 0x01a4;                        //[RecvTable.DT_Ti
 
 constexpr long OFF_INATTACK = 0x0738af90;                     //[Buttons]->in_attack;
 constexpr long OFF_INJUMP = 0x0738b0a0;                       //[Buttons]->in_jump;
+
 
 constexpr long OFF_CAMERAORIGIN = 0x1f00;                     //[Miscellaneous]->CPlayer!camera_origin
 constexpr long OFF_STUDIOHDR = 0x1020;                        //[Miscellaneous]->CBaseAnimating!m_pStudioHdr
@@ -38,8 +42,11 @@ constexpr long OFF_VIEW_ANGLES = 0x2564 - 0x14;               //[DataMap.C_Playe
 constexpr long OFF_PUNCH_ANGLES = 0x23f8;       //0x1f0c      //[?]->?
 
 // Weapon 
-constexpr long OFF_WEAPON_HANDLE = 0x1964;                    //[RecvTable.DT_Player]->m_latestPrimaryWeapons...............................................
-constexpr long OFF_OFFHAND_WEAPON = 0x1974;                   //m_latestNonOffhandWeapons ..................................................................
+constexpr long OFF_WEAPON_HANDLE = 0x1964;                    //[RecvTable.DT_Player]->m_latestPrimaryWeapons
+constexpr long OFF_WEAPON_INDEX = 0x17a8;                     //[RecvTable.DT_WeaponX]->m_weaponNameIndex
+constexpr long OFF_PROJECTILESCALE = 0x04e4 + 0x19e0;         //projectile_gravity_scale + [WeaponSettingsMeta]base
+constexpr long OFF_PROJECTILESPEED = 0x04dc + 0x19e0;         //projectile_launch_speed + [WeaponSettingsMeta]base
+constexpr long OFF_OFFHAND_WEAPON = 0x1974;                   //m_latestNonOffhandWeapons
 constexpr long OFF_CURRENTZOOMFOV = 0x1600 + 0x00b8;          //m_playerData + m_curZoomFOV
 constexpr long OFF_TARGETZOOMFOV = 0x1600 + 0x00bc;           //m_playerData + m_targetZoomFOV
 constexpr long OFF_WEAPON_INDEX = 0x1798;                     //[RecvTable.DT_WeaponX]->m_weaponNameIndex

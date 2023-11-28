@@ -31,6 +31,7 @@ namespace Config {
         float ExtraSmooth = 1144;
         float FOV = 5;
         float ZoomScale = 1.4;
+
         float MinDistance = 1;
         float HipfireDistance = 27;
         float ZoomDistance = 200;
@@ -38,7 +39,7 @@ namespace Config {
         float YawPower = 1.534342324;
     };
 
-    namespace Glow {
+    namespace Sense {
         bool Enabled = true;
         bool ItemGlow = true;
         bool DrawSeer = true;
@@ -47,6 +48,8 @@ namespace Config {
         float SeerMaxDistance = 500;
         bool DrawFOVCircle = false;
         float GameFOV = 110;
+        bool ShowSpectators = true;
+
     };
 
     namespace Triggerbot {
@@ -64,7 +67,6 @@ void UpdateConfig() {
         WritePair(Aimbot, PredictBulletDrop);
         WritePair(Aimbot, Speed);
         WritePair(Aimbot, Smooth);
-        WritePair(Aimbot, ExtraSmooth);
         WritePair(Aimbot, FOV);
         WritePair(Aimbot, ZoomScale);
         WritePair(Aimbot, MinDistance);
@@ -75,15 +77,16 @@ void UpdateConfig() {
         WritePair(Aimbot, YawPower);
         WriteSectionEnd();
 
-        WriteSection(Glow);
-        WritePair(Glow, Enabled);
-        WritePair(Glow, ItemGlow);
-        WritePair(Glow, DrawSeer);
-        WritePair(Glow, VisibleOnly);
-        WritePair(Glow, MaxDistance);
-        WritePair(Glow, SeerMaxDistance);
-        WritePair(Glow, DrawFOVCircle);
-        WritePair(Glow, GameFOV);
+        WriteSection(Sense);
+        WritePair(Sense, Enabled);
+        WritePair(Sense, ItemGlow);
+        WritePair(Sense, DrawSeer);
+        WritePair(Sense, AimedAtOnly);
+        WritePair(Sense, MaxDistance);
+        WritePair(Sense, SeerMaxDistance);
+        WritePair(Sense, ShowSpectators);
+        WritePair(Sense, DrawFOVCircle);
+        WritePair(Sense, GameFOV);
         WriteSectionEnd();
 
         WriteSection(Triggerbot);
@@ -106,21 +109,21 @@ bool ReadConfig(const std::string &configFile) {
     ReadBool(Aimbot, PredictBulletDrop);
     ReadFloat(Aimbot, Speed);
     ReadFloat(Aimbot, Smooth);
-    ReadFloat(Aimbot, ExtraSmooth);
     ReadFloat(Aimbot, FOV);
     ReadFloat(Aimbot, ZoomScale);
     ReadFloat(Aimbot, MinDistance);
     ReadFloat(Aimbot, HipfireDistance);
     ReadFloat(Aimbot, ZoomDistance);
 
-    ReadBool(Glow, Enabled);
-    ReadBool(Glow, ItemGlow);
-    ReadBool(Glow, DrawSeer);
-    ReadBool(Glow, VisibleOnly);
-    ReadFloat(Glow, MaxDistance);
-    ReadFloat(Glow, SeerMaxDistance);
-    ReadBool(Glow, DrawFOVCircle);
-    ReadFloat(Glow, GameFOV);
+    ReadBool(Sense, Enabled);
+    ReadBool(Sense, ItemGlow);
+    ReadBool(Sense, DrawSeer);
+    ReadBool(Sense, AimedAtOnly);
+    ReadFloat(Sense, MaxDistance);
+    ReadFloat(Sense, SeerMaxDistance);
+    ReadBool(Sense, ShowSpectators);
+    ReadBool(Sense, DrawFOVCircle);
+    ReadFloat(Sense, GameFOV);
 
     ReadBool(Triggerbot, Enabled);
     ReadFloat(Triggerbot, Range);
