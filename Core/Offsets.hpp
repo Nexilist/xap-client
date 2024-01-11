@@ -41,7 +41,7 @@ constexpr long OFF_YAW = 0x21fc - 0x8;                        //m_currentFramePl
 
 // Weapon 
 constexpr long OFF_WEAPON_HANDLE = 0x18f4;                    //[RecvTable.DT_Player]->m_latestPrimaryWeapons
-constexpr long OFF_WEAPON_INDEX = 0x1524;                     //[RecvTable.DT_WeaponX]->m_weaponNameIndex
+constexpr long OFF_WEAPON_INDEX = 0x1738;                     //[RecvTable.DT_WeaponX]->m_weaponNameIndex
 constexpr long OFF_PROJECTILESCALE = 0x04ec + 0x1978;         //projectile_gravity_scale + [WeaponSettingsMeta]base
 constexpr long OFF_PROJECTILESPEED = 0x04e4 + 0x1978;         //projectile_launch_speed + [WeaponSettingsMeta]base
 constexpr long OFF_OFFHAND_WEAPON = 0x1904;                   //m_latestNonOffhandWeapons
@@ -49,7 +49,7 @@ constexpr long OFF_CURRENTZOOMFOV = 0x1590 + 0x00b8;          //m_playerData + m
 constexpr long OFF_TARGETZOOMFOV = 0x1590 + 0x00bc;           //m_playerData + m_targetZoomFOV
 
 // Glow
-constexpr long OFF_GLOW_ENABLE = 0x26C;                       //Script_Highlight_GetCurrentContext
+constexpr long OFF_GLOW_ENABLE = 0x28C;                       //Script_Highlight_GetCurrentContext
 constexpr long OFF_GLOW_THROUGH_WALL = 0x26c;                 //Script_Highlight_SetVisibilityType
 constexpr long OFF_GLOW_FIX = 0x268;
 constexpr long OFF_GLOW_HIGHLIGHT_ID = 0x28C;                 //[DT_HighlightSettings].m_highlightServerActiveStates    
