@@ -1,4 +1,5 @@
 #pragma once
+#include "../Utils/Config.hpp"
 #include <string>
 #include "Offsets.hpp"
 #include "LocalPlayer.hpp"
@@ -43,6 +44,8 @@ struct Player {
     bool IsLocal;
     bool IsAlly;
     bool IsHostile;
+    bool nonBR;
+    bool friendly;
 
     float DistanceToLocalPlayer;
     float Distance2DToLocalPlayer;
@@ -86,16 +89,27 @@ struct Player {
         MaxHealth = Memory::Read<int>(BasePointer + OFF_MAXHEALTH);
         Shield = Memory::Read<int>(BasePointer + OFF_SHIELD);
         MaxShield = Memory::Read<int>(BasePointer + OFF_MAXSHIELD);
-
-        if (Myself->IsValid()) {
-            IsLocal = Myself->BasePointer == BasePointer;
-            IsAlly = Myself->Team == Team;
-            IsHostile = !IsAlly;
-            DistanceToLocalPlayer = Myself->LocalOrigin.Distance(LocalOrigin);
-            Distance2DToLocalPlayer = Myself->LocalOrigin.To2D().Distance(LocalOrigin.To2D());
-        }
+        
+          if (Myself->IsValid() && Config::Sense::Team) {
+              IsLocal = Myself->BasePointer == BasePointer;
+              IsAlly = Myself->Team == Team;
+              IsHostile = !IsAlly;
+              DistanceToLocalPlayer = Myself->LocalOrigin.Distance(LocalOrigin);
+              Distance2DToLocalPlayer = Myself->LocalOrigin.To2D().Distance(LocalOrigin.To2D());
+          }
+          else if (Myself->IsValid() && !Config::Sense::Team) {
+              IsLocal = Myself->BasePointer == BasePointer;
+              nonBR = !Config::Sense::Team;
+              friendly = (nonBR)
+                  ? (Myself->Team % 2 == 0 && Team % 2 == 0) || (Myself->Team % 2 != 0 && Team % 2 != 0)
+                  : Myself->Team == Team;
+              
+              IsAlly = friendly;
+              IsHostile = !IsAlly;
+              DistanceToLocalPlayer = Myself->LocalOrigin.Distance(LocalOrigin);
+              Distance2DToLocalPlayer = Myself->LocalOrigin.To2D().Distance(LocalOrigin.To2D());
+          }
     }
-
     std::string GetPlayerName(){
         uintptr_t NameIndex = Memory::Read<uintptr_t>(BasePointer + OFF_NAME_INDEX);
         uintptr_t NameOffset = Memory::Read<uintptr_t>(OFF_REGION + OFF_NAME_LIST + ((NameIndex - 1) << 4 ));
