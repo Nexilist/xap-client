@@ -1,1 +1,0 @@
-/usr/bin/c++ CMakeFiles/xapclient.dir/xap.cpp.o -o xapclient   -L/usr/local/lib  -Wl,-rpath,/usr/local/lib libimgui.a -lglfw3 -lGL -lX11 -lXinerama -lXi -ludev /usr/lib/libSM.so /usr/lib/libICE.so /usr/lib/libX11.so /usr/lib/libXext.so /usr/lib/libXtst.so 
