@@ -27,7 +27,9 @@
 #include "../imgui/imgui_impl_opengl3.h"
 
 // Geometry
+#ifndef DEG2RAD
 #define DEG2RAD(x) ((float)(x) * (float)(M_PI / 180.f))
+#endif
 
 struct Sense {
   // Glow
@@ -522,13 +524,17 @@ struct Sense {
 
     // Item Glow //
     if (ItemGlow) {
-      for (int highlightId = 1; highlightId < 35; highlightId++) {
-        const GlowMode newGlowMode = {137, 138, 35, 127};
+      for (int highlightId = 30; highlightId < 40; highlightId++) {
+        const GlowMode newGlowMode = {137, 0, 0, 127};
         SetGlowState(HighlightSettingsPointer, HighlightSize, highlightId,
                      newGlowMode);
       }
     } else {
-      for (int highlightId = 1; highlightId < 35; highlightId++) {
+      for (std::vector<GlowMode>::size_type highlightId = 30;
+           highlightId <
+           std::min(static_cast<std::vector<GlowMode>::size_type>(40),
+                    StoredGlowMode->size());
+           ++highlightId) {
         const GlowMode newGlowMode = StoredGlowMode->at(highlightId);
         SetGlowState(HighlightSettingsPointer, HighlightSize, highlightId,
                      newGlowMode);
