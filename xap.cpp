@@ -121,11 +121,15 @@ void LoadConfig() {
     ESP->ItemGlow = Config::Sense::ItemGlow;
     ESP->GlowMaxDistance = Config::Sense::MaxDistance;
     ESP->DrawSeer = Config::Sense::DrawSeer;
-    ESP->SeerMaxDistance = Config::Sense::SeerMaxDistance;
+    ESP->ESPMaxDistance = Config::Sense::ESPMaxDistance;
     ESP->AimedAtOnly = Config::Sense::AimedAtOnly;
     ESP->ShowSpectators = Config::Sense::ShowSpectators;
     ESP->DrawFOVCircle = Config::Sense::DrawFOVCircle;
     ESP->GameFOV = Config::Sense::GameFOV;
+    ESP->DrawBox = Config::Sense::DrawBox;
+    ESP->DrawNames = Config::Sense::DrawNames;
+    ESP->ShowNear = Config::Sense::ShowNear;
+    ESP->Skeleton = Config::Sense::Skeleton;
 
     // Triggerbot //
     Trigger->TriggerbotEnabled = Config::Triggerbot::Enabled;
@@ -152,7 +156,8 @@ void RenderUI() {
 		ImGuiWindowFlags_NoScrollbar |
 		ImGuiWindowFlags_NoSavedSettings |
 		ImGuiWindowFlags_NoInputs |
-		ImGuiWindowFlags_NoBackground
+		ImGuiWindowFlags_NoBackground |
+		ImGuiSliderFlags_AlwaysClamp
 	);
 	Canvas = ImGui::GetWindowDrawList();
     if (Map->IsPlayable)
@@ -170,10 +175,15 @@ void RenderUI() {
     ImGui::TextColored(ProcessingTimeColor, "Processing Time: %02dms", OverlayWindow.ProcessingTime);
     ImGui::SameLine();
 
-    if (OverlayWindow.AlignedButton("Save Config", 1.0f)) {
+    if (OverlayWindow.AlignedButton("Save Config")) {
         SaveConfig();
         std::cout << "config saved" << std::endl;
     }    
+    ImGui::SameLine();
+    if (OverlayWindow.AlignedButton("Load Config")) {
+        LoadConfig();
+        std::cout << "config loaded" << std::endl;
+    }   
 
     if (ImGui::BeginTabBar("Menus"), ImGuiTabBarFlags_NoCloseWithMiddleMouseButton) {
         // Draw Settings //

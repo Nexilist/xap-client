@@ -1,0 +1,4 @@
+/home/william/Documents/xap-client/beta/CMakeFiles/imgui.dir
+/home/william/Documents/xap-client/beta/CMakeFiles/xapclient.dir
+/home/william/Documents/xap-client/beta/CMakeFiles/edit_cache.dir
+/home/william/Documents/xap-client/beta/CMakeFiles/rebuild_cache.dir

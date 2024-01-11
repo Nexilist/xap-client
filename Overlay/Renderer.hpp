@@ -33,7 +33,7 @@ public:
 		canvas->AddCircleFilled(ImVec2(pos.x, pos.y), radius, color, segments);
 	}
 
-    static void DrawLine(ImDrawList* canvas, const Vector2D& start, const Vector2D& end, float thickness, const ImVec4& color) {
+    static void DrawLine(ImDrawList* canvas, const Vector2D& start, const Vector2D& end, float thickness, const ImColor& color) {
 		canvas->AddLine((const ImVec2&)start, (const ImVec2&)end, ImColor(color), thickness);
 	}
 
@@ -47,6 +47,15 @@ public:
 
     static void DrawHexagonFilled(ImDrawList* canvas, const ImVec2& p1, const ImVec2& p2, const ImVec2& p3, const ImVec2& p4, const ImVec2& p5, const ImVec2& p6, ImU32 col) {
         canvas->AddHexagonFilled(p1, p2, p3, p4, p5, p6, col);
+    }
+    
+//DrawBox
+    static void DrawBox(ImDrawList* canvas,const Vector2D& foot, const Vector2D& head,const ImColor& color, float thickness)
+    {
+    	float height = head.y - foot.y;
+    	float width = height / 2.0f;
+    	canvas->AddRect(ImVec2(foot.x - (width / 2), foot.y), ImVec2(head.x + (width/2), head.y+(height*0.2)), color, 0.0f, 0, thickness);
+    	
     }
 
     static void DrawSeer(ImDrawList* Canvas, float x, float y, int shield, int max_shield, int health) {
