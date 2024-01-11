@@ -22,7 +22,7 @@ constexpr long OFF_MAXSHIELD = 0x01a4;                        //[RecvTable.DT_Ti
 constexpr long OFF_INATTACK = 0x073cc520;                     //[Buttons]->in_attack
 
 constexpr long OFF_CAMERAORIGIN = 0x1e90;                     //[Miscellaneous]->CPlayer!camera_origin
-constexpr long OFF_STUDIOHDR = 0xfb0;                        //[Miscellaneous]->CBaseAnimating!m_pStudioHdr
+constexpr long OFF_STUDIOHDR = 0xfb0;                         //[Miscellaneous]->CBaseAnimating!m_pStudioHdr
 constexpr long OFF_BONES = 0x0d60 + 0x48;                     //m_nForceBone
 
 constexpr long OFF_LOCAL_ORIGIN = 0x017c;                     //[DataMap.C_BaseEntity]->m_vecAbsOrigin
