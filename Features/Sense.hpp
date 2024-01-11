@@ -572,33 +572,30 @@ struct Sense {
     SetGlowState(HighlightSettingsPointer, HighlightSize, 92, LockedOnMode);
     SetColorState(HighlightSettingsPointer, HighlightSize, 92, LockedOnColor);
 
-    for (int i = 0; i < Players->size(); i++) {
-      Player *Target = Players->at(i);
-      if (!Target->IsValid())
-        continue;
-      if (!Target->IsHostile)
+    for (const auto &player : *Players) {
+      if (!player->IsValid() || !player->IsHostile)
         continue;
 
       if (GlowEnabled) {
-        if (Target->IsLockedOn) {
-          SetGlow(Target, 1, 2, 92);
+        if (player->IsLockedOn) {
+          SetGlow(player, 1, 2, 92);
           continue;
         }
 
-        if (Target->DistanceToLocalPlayer <
+        if (player->DistanceToLocalPlayer <
             Conversion::ToGameUnits(GlowMaxDistance)) {
-          if (Target->IsKnocked) {
-            SetGlow(Target, 1, 2, 90);
+          if (player->IsKnocked) {
+            SetGlow(player, 1, 2, 90);
             continue;
           }
 
-          int Highlight = (Target->IsVisible) ? 0 : 1;
-          SetGlow(Target, 1, 2, Highlight);
+          int highlight = (player->IsVisible) ? 0 : 1;
+          SetGlow(player, 1, 2, highlight);
           continue;
         }
       }
 
-      SetGlow(Target, 0, 0, 91);
+      SetGlow(player, 0, 0, 91);
     }
   }
 };
