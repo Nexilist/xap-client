@@ -543,20 +543,20 @@ struct Sense {
 
     // Player Glow //
     // -> Visible
-    const GlowMode VisibleMode = {2, 4, 20, 127};
-    const Color VisibleColor = {0, 255, 0};
+    const GlowMode VisibleMode = {2, 6, 32, 127};
+    const Color VisibleColor = {0.6, 3, 2.04};
     SetGlowState(HighlightSettingsPointer, HighlightSize, 0, VisibleMode);
     SetColorState(HighlightSettingsPointer, HighlightSize, 0, VisibleColor);
 
     // -> Invisible
-    const GlowMode InvisibleMode = {2, 4, 20, 127};
-    const Color InvisibleColor = {255, 0, 0};
+    const GlowMode InvisibleMode = {2, 6, 32, 100};
+    const Color InvisibleColor = {4.5, 0.6, 0.6};
     SetGlowState(HighlightSettingsPointer, HighlightSize, 1, InvisibleMode);
     SetColorState(HighlightSettingsPointer, HighlightSize, 1, InvisibleColor);
 
     // -> Knocked
-    const GlowMode KnockedMode = {2, 4, 20, 127};
-    const Color KnockedColor = {255, 150, 0};
+    const GlowMode KnockedMode = {2, 6, 32, 127};
+    const Color KnockedColor = {1, 1, 0.35};
     SetGlowState(HighlightSettingsPointer, HighlightSize, 90, KnockedMode);
     SetColorState(HighlightSettingsPointer, HighlightSize, 90, KnockedColor);
 
