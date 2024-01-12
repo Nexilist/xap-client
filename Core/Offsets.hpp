@@ -53,4 +53,4 @@ constexpr long OFF_GLOW_ENABLE = 0x28C;                       //Script_Highlight
 constexpr long OFF_GLOW_THROUGH_WALL = 0x26c;                 //Script_Highlight_SetVisibilityType
 constexpr long OFF_GLOW_FIX = 0x268;
 constexpr long OFF_GLOW_HIGHLIGHT_ID = 0x28C;                 //[DT_HighlightSettings].m_highlightServerActiveStates    
-constexpr long OFF_GLOW_HIGHLIGHTS = 0xB7A4E90;               //HighlightSettings
+constexpr long OFF_GLOW_HIGHLIGHTS = 0xB7A6050;               //HighlightSettings
